@@ -48,7 +48,8 @@ e schema de body/response (JSON Schema, via `jsonschema`).
 | `.postman/resources.yaml` | A qual workspace/organização Postman este repo está ligado; quais arquivos fora de `postman/` são registrados | Escrito pelo Postman Desktop ao conectar; editado à mão quando precisa registrar algo (ex.: a spec, ver `docs/postman-git-native.md`) | Sim, pro vínculo repo↔workspace |
 | `fern/fern.config.json` | Organização Fern + versão do CLI | Editado à mão (ou via commit direto no GitHub pelo Fern Editor) | Sim, pra qual organização Fern este repo publica |
 | `fern/generators.yml` | De onde a Fern lê a definição da API | Aponta pra `postman/specs/openapi.yaml` — editado à mão | Não é fonte, é **referência** à spec |
-| `fern/docs.yml` | Domínio, título, navegação, tema do site publicado | Editado à mão | Sim, pra aparência/URL do site |
+| `fern/docs.yml` | Domínio, título, navegação, tema (cores light/dark) do site publicado | Editado à mão | Sim, pra aparência/URL do site |
+| `fern/pages/*.mdx` | Páginas de docs além da API Reference (registradas em `docs.yml navigation`) | Editado à mão; sem entrada em `navigation`, a página existe mas não aparece no site | Sim, pro conteúdo dessas páginas |
 | `dist/*.postman_collection.json` | Espelho v2.1 da collection | **Gerado**, nunca editado à mão (`npm run export:v2`) | Não — é derivado; em push direto na `main` o CI regenera e **commita sozinho** se estiver desatualizado; em PR, só falha e pede pra alguém rodar local |
 | `scripts/check_spec_alignment.py` | Confere spec ↔ collection | — | N/A (é a checagem, não a fonte) |
 | `.github/workflows/*.yml` | Quando cada validação/publicação roda | — | N/A |

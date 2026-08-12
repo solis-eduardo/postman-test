@@ -249,9 +249,10 @@ a API uma vez alimenta os três.
 
 ```
 fern/
-├── fern.config.json   # organização Fern (solis-com-br-s-team) + versão do CLI
-├── generators.yml     # api.specs -> ../postman/specs/openapi.yaml (fonte real da API)
-├── docs.yml           # navegação, tema, instância publicada
+├── fern.config.json     # organização Fern (solis-com-br-s-team) + versão do CLI
+├── generators.yml       # api.specs -> ../postman/specs/openapi.yaml (fonte real da API)
+├── docs.yml             # navegação, tema (light/dark), instância publicada
+├── pages/guia-da-api.mdx  # página de docs além da API Reference
 └── .gitignore
 ```
 

@@ -2,8 +2,17 @@ instances:
   - url: solis.docs.buildwithfern.com
 title: PetVerse API | Documentação (via fern/ no repo)
 navigation:
+  - page: Guia da API
+    path: pages/guia-da-api.mdx
   - api: API Reference
     paginated: true
 colors:
-  accentPrimary: '#ffffff'
-  background: '#000000'
+  accent-primary:
+    light: '#F7931D'
+    dark: '#F7931D'
+  background:
+    light: '#FFFCF8'
+    dark: '#0C0701'
+  border:
+    light: '#D9D2CA'
+    dark: '#362F27'

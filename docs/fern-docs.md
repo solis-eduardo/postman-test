@@ -33,6 +33,8 @@ fern/
 ├── fern.config.json   # organização Fern + versão do CLI (builds determinísticos)
 ├── generators.yml     # api.specs -> ../postman/specs/openapi.yaml (fonte real da API)
 ├── docs.yml           # navegação, tema, instância (domínio publicado)
+├── pages/
+│   └── guia-da-api.mdx  # página de docs (fora da API Reference), na navegação
 └── .gitignore
 ```
 
@@ -57,12 +59,38 @@ instances:
   - url: solis.docs.buildwithfern.com   # SEM https:// -- ver "Erros que já enfrentamos" abaixo
 title: PetVerse API | Documentação (via fern/ no repo)
 navigation:
+  - page: Guia da API
+    path: pages/guia-da-api.mdx
   - api: API Reference
     paginated: true
 colors:
-  accentPrimary: '#22c55e'
-  background: '#000000'
+  accent-primary:
+    light: '#F7931D'
+    dark: '#F7931D'
+  background:
+    light: '#FFFCF8'
+    dark: '#0C0701'
+  border:
+    light: '#D9D2CA'
+    dark: '#362F27'
 ```
+
+**Cores com variante light/dark**: a chave é `accent-primary` (kebab-case),
+não `accentPrimary` como no exemplo simples de cor única que usamos antes —
+os dois formatos coexistem na Fern (cor única ou `{light, dark}` por chave:
+`accent-primary`, `background`, `border`, `sidebar-background`,
+`header-background`, `card-background`). Confirmado publicando um preview e
+conferindo as CSS custom properties geradas (`--accent-track`, `--border`
+em `rgba()`, não em hex) — não confie só no `fern check`, ele valida
+estrutura, não que a cor certa foi de fato aplicada.
+
+**Página de docs além da API Reference**: `navigation` aceita `page` (com
+`path` apontando pra um `.mdx` dentro de `fern/`) no mesmo nível de `api`.
+Sem isso, só a seção "API Reference" aparece — foi exatamente o que
+aconteceu até adicionarmos `postman/documents/Guia da API PetVerse.md` como
+`fern/pages/guia-da-api.mdx` referenciado em `docs.yml`. Confirmado com
+`fern generate --docs --preview`: o log passa a mostrar `N pages` (antes
+sempre `0 pages`), e a seção aparece na navegação publicada.
 
 ### `fern init --docs --openapi` NÃO conecta a spec de verdade
 
