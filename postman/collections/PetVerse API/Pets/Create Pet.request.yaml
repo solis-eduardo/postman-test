@@ -15,7 +15,7 @@ body:
     }
 scripts:
   - type: beforeRequest
-    code: >-
+    code: |-
       if (!pm.collectionVariables.get('owner_id')) {
           console.warn('owner_id não definido. Execute "Create Owner" antes de criar um pet.');
       }

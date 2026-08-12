@@ -2,6 +2,17 @@ $kind: http-example
 request:
   url: "{{base_url}}/v1/appointments"
   method: POST
+  headers:
+    Content-Type: application/json
+  body:
+    type: text
+    content: |-
+      {
+        "petId": "{{pet_id}}",
+        "vetId": "vet-010",
+        "scheduledAt": "2026-08-20T14:30:00Z",
+        "reason": "Consulta de rotina"
+      }
 response:
   statusCode: 201
   statusText: Created

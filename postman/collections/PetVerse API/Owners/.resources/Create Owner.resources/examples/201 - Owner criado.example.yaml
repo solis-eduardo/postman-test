@@ -2,6 +2,16 @@ $kind: http-example
 request:
   url: "{{base_url}}/v1/owners"
   method: POST
+  headers:
+    Content-Type: application/json
+  body:
+    type: text
+    content: |-
+      {
+        "name": "Maria Souza",
+        "email": "maria.souza@example.com",
+        "phone": "+55 11 99999-0000"
+      }
 response:
   statusCode: 201
   statusText: Created

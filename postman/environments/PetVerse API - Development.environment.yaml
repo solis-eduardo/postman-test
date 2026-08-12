@@ -1,12 +1,24 @@
+owner: "3512728"
+team: "22828748"
+lastUpdatedBy: "3512728"
+lastRevision: 1786537105000
 name: PetVerse API - Development
+color: null
 values:
   - key: base_url
-    value: 'https://api.dev.petverse.example.com'
+    value: https://api.dev.petverse.example.com
+    enabled: true
   - key: user_email
     value: tutor.dev@petverse.dev
+    enabled: true
   - key: user_password
-    value: '{{DEV_USER_PASSWORD}}'
+    value: "{{DEV_USER_PASSWORD}}"
+    enabled: true
   - key: access_token
-    value: ''
+    value: ""
+    enabled: true
   - key: refresh_token
-    value: ''
+    value: ""
+    enabled: true
+createdAt: 2026-08-12T12:18:25.000Z
+updatedAt: 2026-08-12T12:18:25.000Z

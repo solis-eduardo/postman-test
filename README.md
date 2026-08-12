@@ -168,16 +168,19 @@ npx postman-cli collection run "postman/collections/PetVerse API" \
   -i "Pets/Create Pet" \
   -d tests/data/pets.iteration-data.csv
 
-# subir o mock local na porta que o ambiente Local espera (3001) e testar
-cd "postman/mocks/petverse-api" && PORT=3001 node default.js &
-curl http://localhost:3001/health
+# subir o mock local na porta que o ambiente Local espera, e testar
+MOCK_PORT=$(grep -oP '^port:\s*\K\d+' "postman/mocks/petverse-api/config.yaml")
+cd "postman/mocks/petverse-api" && PORT="$MOCK_PORT" node default.js &
+curl "http://localhost:$MOCK_PORT/health"
 ```
 
-> `default.js` cai pra porta `4500` se `PORT` não for definida — mas o
-> ambiente **Local** (`postman/environments/PetVerse API - Local.environment.yaml`)
-> aponta `base_url` pra `3001` (o mesmo valor de `port` em
-> `postman/mocks/petverse-api/config.yaml`), então rode sempre com
-> `PORT=3001` se for testar a collection contra o mock.
+> `config.yaml` (`port:`) e o ambiente **Local**
+> (`postman/environments/PetVerse API - Local.environment.yaml`, `base_url`)
+> são editados **separadamente** pela UI do Postman e precisam apontar pra
+> mesma porta pra collection/flow conseguirem falar com o mock — o Postman
+> não sincroniza isso sozinho. `default.js` cai pra `4500` se `PORT` não for
+> definida. O CI (`api-tests.yml`) falha alto se essas duas portas
+> divergirem, em vez de testar silenciosamente contra a errada.
 
 ## Fluxo da API (para rodar de ponta a ponta)
 
@@ -293,9 +296,9 @@ mesmo mecanismo do item acima.
 
 ### 4. Sandbox rodando (mock)
 
-O mock em `postman/mocks/petverse-api/` só roda local hoje
-(`PORT=3001 node default.js`, ver "Uso rápido" acima). Pra virar uma URL
-pública que um cliente acessa sem precisar rodar nada:
+O mock em `postman/mocks/petverse-api/` só roda local hoje (ver "Uso rápido"
+acima). Pra virar uma URL pública que um cliente acessa sem precisar rodar
+nada:
 - **Nativo do Postman**: clique direito na collection no sidebar → devia
   aparecer "Mock collection" (gera uma URL hospedada pelo Postman a partir dos
   mesmos exemplos). Se esse botão não aparecer, é provável que seja a mesma

@@ -19,3 +19,6 @@ cloudResources:
     ../postman/flows/New flow.flow: 6a7c64967410e199a51558cb
   globals:
     ../postman/globals/workspace.globals.yaml: 5b86ff9b-627c-473a-8714-b2fadcac796d
+resourceNameMappings:
+  specs:
+    - ../postman/specs/openapi.yaml: openapi.yaml

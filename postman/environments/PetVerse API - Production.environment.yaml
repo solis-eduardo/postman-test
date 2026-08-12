@@ -1,12 +1,24 @@
+owner: "3512728"
+team: "22828748"
+lastUpdatedBy: "3512728"
+lastRevision: 1786537106000
 name: PetVerse API - Production
+color: null
 values:
   - key: base_url
-    value: 'https://api.petverse.example.com'
+    value: https://api.petverse.example.com
+    enabled: true
   - key: user_email
-    value: '{{PROD_USER_EMAIL}}'
+    value: "{{PROD_USER_EMAIL}}"
+    enabled: true
   - key: user_password
-    value: '{{PROD_USER_PASSWORD}}'
+    value: "{{PROD_USER_PASSWORD}}"
+    enabled: true
   - key: access_token
-    value: ''
+    value: ""
+    enabled: true
   - key: refresh_token
-    value: ''
+    value: ""
+    enabled: true
+createdAt: 2026-08-12T12:18:25.000Z
+updatedAt: 2026-08-12T12:18:26.000Z

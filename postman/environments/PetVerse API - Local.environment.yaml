@@ -1,12 +1,9 @@
 name: PetVerse API - Local
 values:
   - key: base_url
-    value: 'http://localhost:3001'
+    value: 'http://localhost:3000'
   - key: user_email
     value: tutor@petverse.dev
   - key: user_password
     value: s3nha-super-secreta
-  - key: access_token
-    value: ''
-  - key: refresh_token
-    value: ''
+color: 0

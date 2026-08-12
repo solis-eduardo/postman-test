@@ -39,15 +39,25 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-      - name: Subir o mock local (postman/mocks/petverse-api) na porta 3001
-        # 3001 é a base_url do ambiente "Local"
-        # (postman/environments/PetVerse API - Local.environment.yaml).
+      - name: Subir o mock local (postman/mocks/petverse-api)
+        # A porta não é fixa aqui de propósito: config.yaml (editável pela UI
+        # do Postman) é a fonte de verdade de em que porta o mock escuta.
+        # O ambiente "Local" (base_url) precisa apontar pra essa mesma porta
+        # -- se alguém mudar uma sem a outra, este passo falha alto e claro
+        # em vez de silenciosamente testar contra a porta errada.
         run: |
-          PORT=3001 node "postman/mocks/petverse-api/default.js" &
+          MOCK_PORT=$(grep -oP '^port:\s*\K\d+' "postman/mocks/petverse-api/config.yaml")
+          ENV_PORT=$(grep -oP 'localhost:\K\d+' "postman/environments/PetVerse API - Local.environment.yaml")
+          if [ "$MOCK_PORT" != "$ENV_PORT" ]; then
+            echo "::error::Porta do mock (config.yaml: $MOCK_PORT) diverge da base_url do ambiente Local ($ENV_PORT). Alinhe os dois antes de continuar."
+            exit 1
+          fi
+          echo "Usando porta $MOCK_PORT (mock e ambiente Local concordam)"
+          PORT="$MOCK_PORT" node "postman/mocks/petverse-api/default.js" &
           for i in $(seq 1 20); do
-            curl -sf http://localhost:3001/health > /dev/null && break
+            curl -sf "http://localhost:$MOCK_PORT/health" > /dev/null && break
             sleep 0.5
           done
-          curl -sf http://localhost:3001/health || { echo "::error::mock não respondeu"; exit 1; }
+          curl -sf "http://localhost:$MOCK_PORT/health" || { echo "::error::mock não respondeu"; exit 1; }
       - name: Rodar a collection PetVerse API contra o mock
         run: bash scripts/run-collection.sh Local cli

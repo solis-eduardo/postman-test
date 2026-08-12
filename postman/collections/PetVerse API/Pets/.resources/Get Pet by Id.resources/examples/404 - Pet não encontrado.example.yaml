@@ -2,6 +2,8 @@ $kind: http-example
 request:
   url: "{{base_url}}/v1/pets/inexistente"
   method: GET
+  pathVariables:
+    petId: "{{pet_id}}"
 response:
   statusCode: 404
   statusText: Not Found

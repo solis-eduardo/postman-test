@@ -2,6 +2,18 @@ $kind: http-example
 request:
   url: "{{base_url}}/v1/pets"
   method: POST
+  headers:
+    Content-Type: application/json
+  body:
+    type: text
+    content: |-
+      {
+        "name": "{{pet_name}}",
+        "species": "{{pet_species}}",
+        "breed": "{{pet_breed}}",
+        "birthDate": "2022-03-15",
+        "ownerId": "{{owner_id}}"
+      }
 response:
   statusCode: 201
   statusText: Created

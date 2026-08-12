@@ -2,6 +2,11 @@ $kind: http-example
 request:
   url: "{{base_url}}/v1/pets?species=dog&limit=10"
   method: GET
+  headers:
+    Accept: application/json
+  queryParams:
+    species: dog
+    limit: "10"
 response:
   statusCode: 200
   statusText: OK
