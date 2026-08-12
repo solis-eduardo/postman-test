@@ -166,20 +166,67 @@ npx postman-cli collection lint "postman/collections/PetVerse API"
   ele continua sendo Markdown válido e útil. **Ainda não confirmamos** se ele
   aparece listado no app — se não aparecer, o próximo passo é o mesmo usado
   para specs: registrar em `localResources` no `.postman/resources.yaml`.
-- **Flows** e **Mocks** ficaram **sem exemplo de propósito**. Os dois têm
-  formatos que não dá pra chutar com segurança:
-  - Flows são grafos visuais (nós/conexões) — não há um schema JSON/YAML
-    simples e documentado publicamente para escrever um `.flow` à mão.
-  - Mocks locais (`postman mock run <manifest>`, testado via Postman CLI)
-    exigem um handler JavaScript próprio (`mockSrc`) ou um `.sim.yaml` de
-    fault-injection — não um "replay" declarativo dos exemplos já salvos na
-    collection. O caminho realmente simples para mock aqui é o nativo do
-    Postman: botão direito na collection → "Mock collection" (usa as
-    respostas de exemplo que já estão em
-    `postman/collections/PetVerse API/**/.resources/**/examples/*.example.yaml`),
-    que roda na nuvem do Postman sem precisar de nenhum arquivo local.
+- **Mocks** (`postman/mocks/<slug>/`) — cada mock local é uma pasta com:
+  - `config.yaml`: `id`, `name`, `slug`, `protocol`, `port`,
+    `associations: [{entityType: collection, entityId, relation: source, syncEnabled}]`
+    (liga o mock a uma collection do workspace) e
+    `scenarios: [{name, path: ./default.js, default: true}]`.
+  - `default.js`: um handler **Node puro** (`http.createServer`), sem framework
+    — casa `req.method` + uma regex do `pathname` por endpoint. O Postman gera
+    esse arquivo automaticamente a partir da collection: para cada requisição
+    que tem um exemplo de resposta salvo (`.resources/**/examples/*.example.yaml`),
+    ele usa esse exemplo como corpo/status; para as que não têm exemplo, gera um
+    placeholder `{"message": "Hi from postman mock"}` com 200.
 
-  Se quiser um Flow ou Mock local de verdade neste repo, o caminho mais seguro
-  é criar um mínimo pela UI do Postman e a partir do arquivo gerado eu adapto/
-  documento o padrão real — o mesmo método que resolveu o formato de
-  ambientes e o registro da spec.
+  O mock em `postman/mocks/petverse-api/` foi criado pelo próprio Postman
+  Desktop (não por nós) a partir da collection `PetVerse API`; nós só
+  substituímos os placeholders `"Hi from postman mock"` por respostas
+  fictícias coerentes com `postman/specs/openapi.yaml` (ex.: `Logout` e as
+  rotas `DELETE` agora respondem `204` como a spec define, em vez de `200`
+  com uma mensagem genérica). Testado rodando de verdade:
+
+  ```bash
+  cd "postman/mocks/petverse-api" && PORT=4501 node default.js &
+  curl http://localhost:4501/health
+  curl -X POST http://localhost:4501/v1/auth/login
+  curl -X POST -H "x-mock-response-code: 401" http://localhost:4501/v1/auth/login
+  ```
+
+- **Flows** (`postman/flows/*.flow`) — um único arquivo JSON (não YAML) por
+  flow, versão do schema em `version`, o grafo em `flow.nodes`/`flow.connections`,
+  e `flow.scenarios` para os gatilhos. No exemplo criado
+  (`postman/flows/New flow.flow`): um nó `ev/endpoint@3` (trigger HTTP) ligado
+  a um nó `task/http-request@2` que chama diretamente
+  `postman/collections/PetVerse API/Auth/Login.request.yaml` (o node referencia
+  o `.request.yaml` pelo caminho, não duplica a requisição) usando o ambiente
+  `PetVerse API - Local` (por id). É um esqueleto mínimo (só o Login) — dá pra
+  estender copiando o padrão de `uRiByaGh` (outro `task/http-request@2` apontando
+  para `Owners/Create Owner.request.yaml` etc.) e ligando via `flow.connections`,
+  mas não fizemos isso à mão: risco de errar a semântica das portas
+  (`sourcePort`/`targetPort`) sem testar no app.
+
+## Por que não usamos "Generate spec from collection" como fonte de verdade
+
+O Postman consegue gerar uma spec automaticamente a partir de uma collection
+(e manter as duas sincronizadas via um `.postman/workflows.yaml` com
+`syncSpecToCollection`/`syncCollectionToSpec`). Testamos isso e comparamos
+com `postman/specs/openapi.yaml` — a spec gerada tinha problemas reais o
+suficiente pra não virar a fonte de verdade do contrato:
+
+- `servers[0].url: '{{base_url}}'` — sintaxe de variável do Postman, **inválida**
+  em OpenAPI puro (`no-undefined-server-variable`, erro de lint, não warning).
+- `{{api_version}}` virou parâmetro de path literal (`/{api_version}/pets`) em
+  vez de resolver para `/v1/pets`.
+- **Nenhuma operação teve `requestBody` gerado** — a geração parte só das
+  respostas de exemplo salvas na collection, não dos corpos de requisição.
+- Operações sem exemplo salvo saíram com `responses: {}` (nenhum status
+  documentado): `Refresh Token`, `Logout`, `List Owners`, `Get Owner by Id`,
+  `Delete Owner`, `Update Pet`, `Delete Pet`, `List Appointments`,
+  `Cancel Appointment`.
+- Sem `components.schemas`/`components.parameters` — tudo inline e duplicado
+  por operação.
+
+Ou seja: é um bom ponto de partida (zero esforço, direto da collection), mas
+documenta "o que a collection já respondeu alguma vez", não "o que a API
+aceita". Mantivemos `postman/specs/openapi.yaml`, escrita à mão e mais
+completa, como fonte de verdade.

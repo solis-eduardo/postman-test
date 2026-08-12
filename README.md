@@ -16,6 +16,8 @@ não como um único `.postman_collection.json`.
 | `postman/environments/` | 4 ambientes (Local, Development, Staging, Production) no formato **v3** (`*.environment.yaml`) |
 | `postman/specs/openapi.yaml` | Especificação **OpenAPI 3.0** da API — fonte de verdade do contrato, validada com Redocly |
 | `postman/documents/` | Documentação de referência da API, exposta como "Documents" no workspace |
+| `postman/mocks/petverse-api/` | Mock server local (Node puro) gerado a partir da collection, com respostas revisadas |
+| `postman/flows/` | Flow de exemplo (chama `Auth/Login` via um trigger HTTP) |
 | `tests/` | Massa de dados para execuções data-driven (CSV/JSON/dataset) + explicação de onde vivem os testes funcionais |
 | `scripts/` | Scripts de apoio: lint da collection/spec, **verificação de alinhamento spec↔collection**, execução da collection |
 | `docs/postman-git-native.md` | Explicação detalhada do padrão Git Native e da estrutura de arquivos |
@@ -44,6 +46,10 @@ npx postman-cli collection run "postman/collections/PetVerse API" \
   -e "postman/environments/PetVerse API - Local.environment.yaml" \
   -i "Pets/Create Pet" \
   -d tests/data/pets.iteration-data.csv
+
+# subir o mock local (porta 4500 por padrão) e testar
+cd "postman/mocks/petverse-api" && node default.js &
+curl http://localhost:4500/health
 ```
 
 ## Fluxo da API (para rodar de ponta a ponta)

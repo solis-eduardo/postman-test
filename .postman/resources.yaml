@@ -1,12 +1,5 @@
-# Gerado pelo Postman Desktop ao conectar este repositório via Native Git.
-# Liga esta pasta ao workspace do Postman.
 workspace:
   id: c57071c8-2daa-42b5-9d71-be5c7c63d9c4
-
-# Specs não pareceram ser auto-descobertas mesmo estando dentro de postman/specs/,
-# ao contrário de collections e environments. Registrando explicitamente como
-# teste — se isso fizer a spec aparecer no sidebar, o comentário acima sobre
-# "tudo dentro de postman/ é auto-descoberto" está errado especificamente para specs.
 localResources:
   specs:
     - ../postman/specs/openapi.yaml
