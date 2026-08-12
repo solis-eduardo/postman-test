@@ -43,7 +43,7 @@ postman/collections/PetVerse API/
 │   └── definition.yaml              # metadados da collection: nome, descrição,
 │                                     # variáveis, auth (bearer) e scripts globais
 │                                     # (pre-request/test aplicados a toda requisição)
-├── Auth/
+├── Autenticação/
 │   ├── .resources/
 │   │   ├── definition.yaml          # metadados da pasta (ordem de exibição etc.)
 │   │   └── Login.resources/

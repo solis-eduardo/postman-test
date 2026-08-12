@@ -10,12 +10,15 @@ descrita pela spec/collection.
 > Todo o conteúdo (endpoints, dados, e-mails, tokens) é fictício, para fins de
 > demonstração/estudo do formato.
 
+> **Visão geral da integração Postman ↔ Fern** (o que configura o quê, como
+> cada um se mantém atualizado): `docs/architecture.md`.
+
 ## Conteúdo
 
 | Caminho | O quê |
 |---|---|
 | `app/`, `routes/`, `database/`, `config/`, `resources/`, `tests/Feature`, `tests/Unit` | **Aplicação Laravel** que implementa a PetVerse API |
-| `postman/collections/PetVerse API/` | Collection no formato **v3 / Git Native** — pastas `Auth`, `Owners`, `Pets`, `Appointments`, `System`, cada requisição em seu próprio `*.request.yaml`, com scripts (pre-request/test) e exemplos de resposta |
+| `postman/collections/PetVerse API/` | Collection no formato **v3 / Git Native** — pastas `Autenticação`, `Owners`, `Pets`, `Appointments`, `System`, cada requisição em seu próprio `*.request.yaml`, com scripts (pre-request/test) e exemplos de resposta |
 | `postman/environments/` | 4 ambientes (Local, Development, Staging, Production) no formato **v3** (`*.environment.yaml`) |
 | `postman/specs/openapi.yaml` | Especificação **OpenAPI 3.0** da API — fonte de verdade do contrato, validada com Redocly |
 | `postman/documents/` | Documentação de referência da API, exposta como "Documents" no workspace |
@@ -25,6 +28,7 @@ descrita pela spec/collection.
 | `tests/data/` | Massa de dados para execuções data-driven (CSV/JSON/dataset) da collection |
 | `tests/Feature`, `tests/Unit` | Testes automatizados (Pest) da aplicação Laravel |
 | `scripts/` | Scripts de apoio: lint da collection/spec/Fern, **verificação de alinhamento spec↔collection**, execução da collection |
+| `docs/architecture.md` | **Visão geral**: mapa pasta/arquivo → responsabilidade, como Postman e Fern se mantêm atualizados, ciclo de vida de uma mudança |
 | `docs/postman-git-native.md` | Explicação detalhada do padrão Git Native, estrutura de arquivos e troubleshooting do Postman |
 | `docs/fern-docs.md` | Setup completo da Fern: autenticação, preview/publicação, CI, troubleshooting e equivalente GitLab |
 | `dist/PetVerse API.postman_collection.json` | **Espelho v2.1** da collection, gerado automaticamente (`npm run export:v2`) — usado onde o formato v3 ainda não é aceito (ver "Compartilhando com clientes") |
@@ -184,7 +188,7 @@ curl "http://localhost:$MOCK_PORT/health"
 
 ## Fluxo da API (para rodar de ponta a ponta)
 
-1. `Auth/Login` — autentica e guarda `access_token`/`refresh_token` no ambiente.
+1. `Autenticação/Login` — autentica e guarda `access_token`/`refresh_token` no ambiente.
 2. `Owners/Create Owner` — cria um tutor e guarda `owner_id`.
 3. `Pets/Create Pet` — cria um pet vinculado ao `owner_id` e guarda `pet_id`.
 4. `Appointments/Create Appointment` — agenda uma consulta para o `pet_id`.
