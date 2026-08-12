@@ -194,16 +194,32 @@ npx postman-cli collection lint "postman/collections/PetVerse API"
 
 - **Flows** (`postman/flows/*.flow`) — um único arquivo JSON (não YAML) por
   flow, versão do schema em `version`, o grafo em `flow.nodes`/`flow.connections`,
-  e `flow.scenarios` para os gatilhos. No exemplo criado
-  (`postman/flows/New flow.flow`): um nó `ev/endpoint@3` (trigger HTTP) ligado
-  a um nó `task/http-request@2` que chama diretamente
-  `postman/collections/PetVerse API/Auth/Login.request.yaml` (o node referencia
-  o `.request.yaml` pelo caminho, não duplica a requisição) usando o ambiente
-  `PetVerse API - Local` (por id). É um esqueleto mínimo (só o Login) — dá pra
-  estender copiando o padrão de `uRiByaGh` (outro `task/http-request@2` apontando
-  para `Owners/Create Owner.request.yaml` etc.) e ligando via `flow.connections`,
-  mas não fizemos isso à mão: risco de errar a semântica das portas
-  (`sourcePort`/`targetPort`) sem testar no app.
+  e `flow.scenarios` para os gatilhos.
+
+  `postman/flows/New flow.flow` encadeia 4 chamadas reais da collection:
+  **trigger HTTP → Login → Create Owner → Create Pet → Create Appointment**,
+  cada uma como um nó `task/http-request@2` apontando direto pro
+  `.request.yaml` correspondente (o node referencia o arquivo pelo caminho,
+  não duplica a requisição), usando o ambiente `PetVerse API - Local` (por id)
+  e um `requestVariables` com as variáveis que aquela requisição específica
+  realmente usa (extraídas lendo o próprio `.request.yaml` — ex.: `Create Pet`
+  lista `pet_name`/`pet_species`/`pet_breed`/`owner_id` porque são as que
+  aparecem no `body`).
+
+  **O que é verificado vs. extrapolado:** o nó de trigger, o nó de `Login` e a
+  conexão entre os dois (`sourcePort: "data"` → `targetPort: "AI"`) vieram do
+  arquivo que o próprio Postman Desktop gerou — isso é fato. Os 3 nós
+  seguintes (`Create Owner`, `Create Pet`, `Create Appointment`) e as conexões
+  entre eles foram **extrapolados** copiando exatamente essa mesma estrutura
+  de node/conexão verificada, só trocando `element.name`/`method`/`path`/
+  `requestVariables`. Não temos confirmação de que `targetPort: "AI"` é o
+  nome certo da porta de entrada quando a origem é outro `task/http-request@2`
+  (só vimos isso partindo de um trigger `ev/endpoint@3`) — o JSON é válido e
+  segue o mesmo padrão, mas **abra no Postman Desktop pra confirmar que a
+  sequência aparece conectada visualmente como esperado**. Se alguma conexão
+  não "pegar", o próximo passo é o de sempre neste repo: você reconecta os
+  nós manualmente na UI uma vez, eu leio o arquivo resultante e corrijo o
+  padrão aqui.
 
 ## Por que não usamos "Generate spec from collection" como fonte de verdade
 

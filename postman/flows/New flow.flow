@@ -85,12 +85,206 @@
           "data": {},
           "namedInputsExpanded": true
         }
+      },
+      "createOwner01": {
+        "type": "task/http-request@2",
+        "pos": {
+          "x": 704,
+          "y": 0
+        },
+        "config": {
+          "element": {
+            "name": "Create Owner",
+            "method": "POST",
+            "path": "postman/collections/PetVerse API/Owners/Create Owner.request.yaml"
+          },
+          "environment": "01c33f7f-d59a-4076-89ef-414b098d732b",
+          "parseBody": "auto",
+          "requestVariables": [
+            {
+              "id": "STwfiaFr",
+              "type": null,
+              "kind": null,
+              "value": null,
+              "key": "access_token"
+            },
+            {
+              "id": "NwdKRPbt",
+              "type": null,
+              "kind": null,
+              "value": null,
+              "key": "base_url"
+            },
+            {
+              "id": "wrMo12Nn",
+              "type": null,
+              "kind": null,
+              "value": null,
+              "key": "api_version"
+            }
+          ],
+          "scriptsModifyEnvVars": true,
+          "ignoreTestResults": true,
+          "trackGlobalEnvironment": true,
+          "requestVariables__expanded": true
+        },
+        "ui": {
+          "data": {},
+          "namedInputsExpanded": true
+        }
+      },
+      "createPet01xx": {
+        "type": "task/http-request@2",
+        "pos": {
+          "x": 1056,
+          "y": 0
+        },
+        "config": {
+          "element": {
+            "name": "Create Pet",
+            "method": "POST",
+            "path": "postman/collections/PetVerse API/Pets/Create Pet.request.yaml"
+          },
+          "environment": "01c33f7f-d59a-4076-89ef-414b098d732b",
+          "parseBody": "auto",
+          "requestVariables": [
+            {
+              "id": "FG05kVa4",
+              "type": null,
+              "kind": null,
+              "value": null,
+              "key": "access_token"
+            },
+            {
+              "id": "8yuqkc94",
+              "type": null,
+              "kind": null,
+              "value": null,
+              "key": "base_url"
+            },
+            {
+              "id": "2cidQ7Cr",
+              "type": null,
+              "kind": null,
+              "value": null,
+              "key": "api_version"
+            },
+            {
+              "id": "9evXHbGO",
+              "type": null,
+              "kind": null,
+              "value": null,
+              "key": "pet_name"
+            },
+            {
+              "id": "dRgTznd9",
+              "type": null,
+              "kind": null,
+              "value": null,
+              "key": "pet_species"
+            },
+            {
+              "id": "hqa4mGC8",
+              "type": null,
+              "kind": null,
+              "value": null,
+              "key": "pet_breed"
+            },
+            {
+              "id": "jGS8QMHd",
+              "type": null,
+              "kind": null,
+              "value": null,
+              "key": "owner_id"
+            }
+          ],
+          "scriptsModifyEnvVars": true,
+          "ignoreTestResults": true,
+          "trackGlobalEnvironment": true,
+          "requestVariables__expanded": true
+        },
+        "ui": {
+          "data": {},
+          "namedInputsExpanded": true
+        }
+      },
+      "createAppt01x": {
+        "type": "task/http-request@2",
+        "pos": {
+          "x": 1408,
+          "y": 0
+        },
+        "config": {
+          "element": {
+            "name": "Create Appointment",
+            "method": "POST",
+            "path": "postman/collections/PetVerse API/Appointments/Create Appointment.request.yaml"
+          },
+          "environment": "01c33f7f-d59a-4076-89ef-414b098d732b",
+          "parseBody": "auto",
+          "requestVariables": [
+            {
+              "id": "jKYZbuwt",
+              "type": null,
+              "kind": null,
+              "value": null,
+              "key": "access_token"
+            },
+            {
+              "id": "yZHjj9vO",
+              "type": null,
+              "kind": null,
+              "value": null,
+              "key": "base_url"
+            },
+            {
+              "id": "UrEuKf1n",
+              "type": null,
+              "kind": null,
+              "value": null,
+              "key": "api_version"
+            },
+            {
+              "id": "YMJkRmje",
+              "type": null,
+              "kind": null,
+              "value": null,
+              "key": "pet_id"
+            }
+          ],
+          "scriptsModifyEnvVars": true,
+          "ignoreTestResults": true,
+          "trackGlobalEnvironment": true,
+          "requestVariables__expanded": true
+        },
+        "ui": {
+          "data": {},
+          "namedInputsExpanded": true
+        }
       }
     },
     "connections": {
       "MdPM7eHR": {
         "source": "ewCuG43_",
         "target": "uRiByaGh",
+        "sourcePort": "data",
+        "targetPort": "AI"
+      },
+      "BghY7rop": {
+        "source": "uRiByaGh",
+        "target": "createOwner01",
+        "sourcePort": "data",
+        "targetPort": "AI"
+      },
+      "m0hicRu7": {
+        "source": "createOwner01",
+        "target": "createPet01xx",
+        "sourcePort": "data",
+        "targetPort": "AI"
+      },
+      "4waJB5A6": {
+        "source": "createPet01xx",
+        "target": "createAppt01x",
         "sourcePort": "data",
         "targetPort": "AI"
       }
@@ -135,6 +329,6 @@
   "info": {
     "_postman_id": "8bd5d2f1-ffea-41b9-b6ba-f01baec6cce1"
   },
-  "_postman_exported_at": "2026-08-12T11:35:25.433Z",
+  "_postman_exported_at": "2026-08-12T11:42:42.907Z",
   "_postman_exported_using": "Postman/Local Mode"
 }

@@ -17,7 +17,7 @@ não como um único `.postman_collection.json`.
 | `postman/specs/openapi.yaml` | Especificação **OpenAPI 3.0** da API — fonte de verdade do contrato, validada com Redocly |
 | `postman/documents/` | Documentação de referência da API, exposta como "Documents" no workspace |
 | `postman/mocks/petverse-api/` | Mock server local (Node puro) gerado a partir da collection, com respostas revisadas |
-| `postman/flows/` | Flow de exemplo (chama `Auth/Login` via um trigger HTTP) |
+| `postman/flows/` | Flow de exemplo: trigger HTTP → Login → Create Owner → Create Pet → Create Appointment |
 | `tests/` | Massa de dados para execuções data-driven (CSV/JSON/dataset) + explicação de onde vivem os testes funcionais |
 | `scripts/` | Scripts de apoio: lint da collection/spec, **verificação de alinhamento spec↔collection**, execução da collection |
 | `docs/postman-git-native.md` | Explicação detalhada do padrão Git Native e da estrutura de arquivos |
