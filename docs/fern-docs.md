@@ -32,9 +32,12 @@ alimenta os três.
 fern/
 ├── fern.config.json   # organização Fern + versão do CLI (builds determinísticos)
 ├── generators.yml     # api.specs -> ../postman/specs/openapi.yaml (fonte real da API)
-├── docs.yml           # navegação, tema, instância (domínio publicado)
+├── docs.yml           # navegação, tema, logo, instância (domínio publicado)
 ├── pages/
 │   └── guia-da-api.mdx  # página de docs (fora da API Reference), na navegação
+├── assets/
+│   ├── logo-branca.png  # ícone + wordmark, usado no tema escuro
+│   └── logo-escura.png  # mesma imagem, texto recolorido pro tema claro
 └── .gitignore
 ```
 
@@ -91,6 +94,54 @@ aconteceu até adicionarmos `postman/documents/Guia da API PetVerse.md` como
 `fern/pages/guia-da-api.mdx` referenciado em `docs.yml`. Confirmado com
 `fern generate --docs --preview`: o log passa a mostrar `N pages` (antes
 sempre `0 pages`), e a seção aparece na navegação publicada.
+
+### Logo
+
+```yaml
+logo:
+  href: https://solis.com.br
+  light: assets/logo-escura.png   # usada quando o site está em tema claro
+  dark: assets/logo-branca.png    # usada quando o site está em tema escuro
+  height: 28
+```
+
+- `logo.light`/`logo.dark` só aceitam **arquivo local** (caminho relativo a
+  `fern/`), não URL remota direto — precisa baixar a imagem pro repo primeiro.
+- A Fern troca a imagem automaticamente por CSS (`dark:hidden` /
+  `dark:block`), confirmado inspecionando o HTML de um preview: os dois
+  `<img>` ficam no DOM, só um visível por vez conforme o tema.
+- `fern/assets/logo-branca.png` é o arquivo original (ícone laranja + texto
+  branco) — funciona no tema escuro, mas o texto fica ilegível no claro
+  (fundo `#FFFCF8`). `fern/assets/logo-escura.png` foi gerada a partir dela
+  (mesmo ícone laranja, texto recolorido pra preto, transparência
+  preservada) especificamente pro tema claro.
+
+### Outras opções de tema/config em `docs.yml` (além de cores e logo)
+
+Não usadas neste repo ainda, mas documentadas oficialmente
+([global configuration](https://buildwithfern.com/learn/docs/getting-started/global-configuration)):
+
+| Chave | Pra quê |
+|---|---|
+| `favicon` | Ícone da aba do navegador (arquivo local, tipo `logo`) |
+| `background-image` | Imagem de fundo do site, variante `light`/`dark` |
+| `typography` | Fonte customizada pra título, corpo de texto e código |
+| `navbar-links` | Botões de call-to-action no topo (ex.: link pro GitHub, "Fale conosco") |
+| `footer-links` | Links de rodapé (GitHub, Slack, redes sociais) |
+| `layout` | Dimensões estruturais (altura do header, largura da página) |
+| `theme` | Estilo do sidebar/tabs (`minimal` etc.) |
+| `settings` | Comportamento do site: texto de busca, desabilitar busca, etc. |
+| `metadata` | Tags de SEO/preview social (Open Graph, Twitter Card) |
+| `analytics` | Integração com GA4 e outros provedores |
+| `redirects` | Redirecionamentos de path (útil ao renomear uma página) |
+| `landing-page` | Página de entrada dedicada, diferente da primeira da navegação |
+| `ai-search` / `agents` | Configuração do "Ask Fern" (busca com IA) e diretivas pra agentes de IA (`llms.txt`) — ver `docs/ia-postman-fern.md` |
+| `header` / `footer` | Componente React customizado, pra quem quer fugir do template padrão |
+
+Nenhuma dessas foi testada em preview ainda — antes de usar, seguir o mesmo
+método: `fern check` primeiro, depois confirmar em preview (o `check` sozinho
+já deixou passar o bug do `https://` duplicado e não pega layout/imagem
+quebrada).
 
 ### `fern init --docs --openapi` NÃO conecta a spec de verdade
 

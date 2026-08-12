@@ -1,6 +1,11 @@
 instances:
   - url: solis.docs.buildwithfern.com
 title: PetVerse API | Documentação (via fern/ no repo)
+logo:
+  href: https://solis.com.br
+  light: assets/logo-escura.png
+  dark: assets/logo-branca.png
+  height: 28
 navigation:
   - page: Guia da API
     path: pages/guia-da-api.mdx
