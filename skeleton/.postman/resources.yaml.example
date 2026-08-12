@@ -1,0 +1,25 @@
+# Gerado normalmente pelo Postman Desktop ao conectar via Native Git --
+# incluído aqui como referência/fallback, caso precise recriar manualmente
+# (ver docs/postman-git-native.md, seção "Erros que já enfrentamos",
+# "The .postman directory is missing").
+#
+# Depois de preencher o workspace.id real, renomeie este arquivo pra
+# ".postman/resources.yaml" (sem ".example") na raiz do projeto.
+workspace:
+  id: <uuid do workspace -- pegue em Postman Desktop, ou crie um workspace novo>
+
+# Specs NÃO são auto-descobertas só por estarem dentro de postman/specs/
+# (diferente de collections/ambientes) -- precisam ser registradas aqui.
+localResources:
+  specs:
+    - ../postman/specs/openapi.yaml
+
+# Preenchido automaticamente pelo Postman após "Push to Cloud" -- não edite
+# à mão, só documentando o formato pra reconhecer se aparecer:
+# cloudResources:
+#   collections:
+#     ../postman/collections/<COLLECTION_NAME>: <id>
+#   environments:
+#     ../postman/environments/<arquivo>.environment.yaml: <id>
+#   specs:
+#     ../postman/specs/openapi.yaml: <id>

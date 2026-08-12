@@ -1,0 +1,11 @@
+# Formato v3 confirmado observando o Postman Desktop converter um ambiente
+# v2.1 (.postman_environment.json) via "Convert to v3" na UI -- a Postman
+# CLI ainda não tem um comando de migração pra ambientes (só pra
+# collections), então esse arquivo não dá pra gerar via CLI, só copiar esse
+# padrão ou converter pela UI mesmo. Ver docs/postman-git-native.md.
+name: __COLLECTION_NAME__ - Local
+values:
+  - key: base_url
+    value: 'http://localhost:3000'
+  - key: access_token
+    value: ''

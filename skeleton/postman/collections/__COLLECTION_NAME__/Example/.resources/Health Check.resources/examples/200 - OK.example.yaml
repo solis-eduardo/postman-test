@@ -1,0 +1,18 @@
+# Formato confirmado via Postman CLI oficial. Um exemplo de resposta salvo =
+# um arquivo, dentro de .resources/<Nome da requisição>.resources/examples/.
+$kind: http-example
+request:
+  url: "{{base_url}}/health"
+  method: GET
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "status": "ok"
+      }
+order: 1000

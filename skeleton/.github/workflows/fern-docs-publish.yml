@@ -1,0 +1,38 @@
+name: publish-fern-docs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "fern/**"
+      - "postman/specs/openapi.yaml"
+      - ".github/workflows/fern-docs-publish.yml"
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "24"
+
+      - name: Setup Fern CLI
+        uses: fern-api/setup-fern-cli@v1
+
+      - name: Publish docs
+        env:
+          FERN_TOKEN: ${{ secrets.FERN_TOKEN }}
+        run: fern generate --docs --log-level debug
+        # Requer o secret FERN_TOKEN no repositório:
+        #   1. `npx fern-api login` localmente (ou `fern login` com a CLI instalada)
+        #   2. `npx fern-api org get` -- confirma que autenticou na org certa
+        #      ANTES de gerar o token (senão o token nasce pra org errada,
+        #      e o publish falha com "User does not belong to organization" -
+        #      ver docs/fern-docs.md).
+        #   3. `npx fern-api token --organization <sua-org>`
+        #   4. `gh secret set FERN_TOKEN --repo <owner>/<repo> --body "<token>"`

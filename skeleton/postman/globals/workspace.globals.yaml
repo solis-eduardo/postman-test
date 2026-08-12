@@ -1,0 +1,4 @@
+# Formato confirmado: é o que o Postman Desktop cria automaticamente (vazio)
+# na primeira vez que abre um repositório via Native Git.
+name: Globals
+values: []

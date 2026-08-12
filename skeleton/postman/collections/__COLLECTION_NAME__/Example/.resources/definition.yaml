@@ -1,0 +1,6 @@
+# Metadados da pasta "Example" -- $kind: collection também (pastas filhas
+# usam o mesmo $kind da raiz). `name` NÃO vai aqui -- o nome da pasta em
+# disco É o nome exibido; description e order são opcionais.
+$kind: collection
+description: Endpoints de exemplo -- substitua/renomeie esta pasta pelas suas.
+order: 1000

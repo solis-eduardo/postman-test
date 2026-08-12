@@ -1,0 +1,71 @@
+# yaml-language-server: $schema=https://schema.buildwithfern.dev/docs-yml.json
+
+instances:
+  # IMPORTANTE (confirmado testando -- causou "https://https://..." duplicado):
+  # NÃO inclua o esquema aqui. Só o domínio puro.
+  - url: __FERN_DOMAIN__
+
+title: __COLLECTION_NAME__ | Documentação
+
+# Link(s) fixos no topo da navegação, fora da sidebar principal -- útil pra
+# expor a spec crua (a Fern serve /openapi.json e /openapi.yaml sozinha,
+# sem precisar declarar isso em nenhum outro lugar; confirmado que esses
+# dois paths respondem mesmo com o domínio principal atrás de login).
+navbar-links:
+  - type: minimal
+    text: OpenAPI (JSON)
+    href: /openapi.json
+    target: _blank
+  - type: minimal
+    text: OpenAPI (YAML)
+    href: /openapi.yaml
+    target: _blank
+
+navigation:
+  # Sem isso, só a seção "API Reference" aparece -- página(s) extra de docs
+  # (guias, overview) precisam ser listadas aqui explicitamente.
+  - page: Guia
+    path: pages/example.mdx
+  - api: API Reference
+    paginated: true
+
+colors:
+  # Suporta cor única (`accentPrimary: '#hex'`) ou variante light/dark por
+  # chave (formato abaixo, kebab-case) -- os dois formatos coexistem.
+  # Confirmado testando: fern check passa com qualquer um dos dois, mas só
+  # visualmente em preview dá pra saber se a cor certa aplicou de verdade.
+  accent-primary:
+    light: '#3B82F6'
+    dark: '#60A5FA'
+  background:
+    light: '#FFFFFF'
+    dark: '#0A0A0A'
+  border:
+    light: '#E5E7EB'
+    dark: '#27272A'
+
+# Combinação testada e aprovada num projeto real (ver docs/fern-docs.md
+# pra tabela completa de opções, incluindo as que NÃO tiveram efeito visível
+# sem tabs/múltiplos produtos configurados: theme.tabs, theme.product-switcher).
+theme:
+  sidebar: minimal        # default | minimal
+  page-actions: toolbar   # default | toolbar
+  footer-nav: minimal     # default | minimal
+  # body: canvas           # default | canvas -- testado, descartado (não curtiu)
+
+# Logo com variante light/dark -- só aceita ARQUIVO LOCAL (não URL remota
+# direto, precisa baixar pro repo primeiro). Descomente e aponte pros seus
+# arquivos em fern/assets/ quando tiver as duas variantes (uma versão clara
+# e uma escura da mesma logo -- ver docs/fern-docs.md sobre como recolorir
+# uma logo de variante única, se só tiver uma).
+# logo:
+#   href: https://seu-site.com
+#   light: assets/logo-escura.png
+#   dark: assets/logo-clara.png
+#   height: 28
+
+# Outras opções documentadas mas NÃO testadas neste kit: favicon,
+# background-image, typography, footer-links, layout, settings, metadata,
+# analytics, redirects, landing-page, ai-search/agents (llms.txt), header/
+# footer (componente React customizado). Ver a tabela em docs/fern-docs.md
+# antes de usar -- e sempre confirme em preview, não só com `fern check`.

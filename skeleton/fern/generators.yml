@@ -1,0 +1,9 @@
+# yaml-language-server: $schema=https://schema.buildwithfern.dev/generators-yml.json
+#
+# Só isto é necessário pra conectar a Fern à spec (fonte real da API).
+# IMPORTANTE (confirmado testando): `fern init --docs --openapi <path>`
+# sozinho NÃO gera essa referência de verdade -- só `fern init --api
+# --openapi <path>` gera. Ver docs/fern-docs.md.
+api:
+  specs:
+    - openapi: ../postman/specs/openapi.yaml

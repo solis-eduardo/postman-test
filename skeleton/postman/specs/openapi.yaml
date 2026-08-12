@@ -1,0 +1,50 @@
+openapi: 3.0.3
+info:
+  title: __COLLECTION_NAME__
+  description: >
+    Fonte de verdade do contrato da API. Alimenta a collection Postman,
+    o portal Redoc (GitHub Pages) e a Fern Docs a partir de um único
+    arquivo -- ver docs/architecture.md.
+  version: "1.0.0"
+
+servers:
+  - url: http://localhost:3000
+    description: Local
+
+tags:
+  - name: Example
+    description: Endpoints de exemplo -- renomeie pras tags reais da sua API.
+    # IMPORTANTE: o nome da tag precisa bater com o nome da pasta
+    # correspondente em postman/collections/__COLLECTION_NAME__/ -- é o que
+    # scripts/check_spec_alignment.py confere, e é o que a Fern usa pra
+    # montar a navegação do site publicado. Os dois são editados
+    # separadamente e nada sincroniza um pro outro (ver docs/fern-docs.md).
+
+paths:
+  /health:
+    get:
+      tags: [Example]
+      summary: Health check
+      operationId: healthCheck
+      responses:
+        '200':
+          description: API saudável
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status:
+                    type: string
+                    example: ok
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []

@@ -1,0 +1,65 @@
+# Equivalente GitLab dos workflows fern-check.yml/fern-docs-publish.yml.
+# A Fern NÃO tem um app dedicado do GitLab (diferente do GitHub) -- é só
+# pipeline CI/CD. Renomeie pra ".gitlab-ci.yml" na raiz do projeto quando
+# for usar. Ver docs/fern-docs.md, seção "Equivalente para GitLab".
+#
+# Variáveis de CI/CD necessárias (Settings > CI/CD > Variables no GitLab):
+#   FERN_TOKEN  -- gerado com `npx fern-api token --organization <sua-org>`,
+#                  sem proteção de branch.
+#   REPO_TOKEN  -- um Project Access Token do GitLab (role Reporter, scope
+#                  api), usado só pra comentar o link do preview no MR.
+
+stages:
+  - check
+  - preview_docs
+  - publish_docs
+  - cleanup_preview
+
+check:
+  stage: check
+  image: node:24
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  script:
+    - npm install -g fern-api
+    - fern check
+
+preview_docs:
+  stage: preview_docs
+  image: node:24
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  script:
+    - npm install -g fern-api
+    - >
+      OUTPUT=$(fern generate --docs --preview --id "$CI_MERGE_REQUEST_IID" 2>&1) || true
+    - echo "$OUTPUT"
+    - >
+      URL=$(echo "$OUTPUT" | grep -oP 'Published docs to \K.*(?= \()')
+    - echo "Preview URL: $URL"
+    - >
+      curl --request POST
+      --header "PRIVATE-TOKEN: $REPO_TOKEN"
+      --data-urlencode "body=:herb: **Preview:** $URL"
+      "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$CI_MERGE_REQUEST_IID/notes"
+
+publish_docs:
+  stage: publish_docs
+  image: node:24
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  script:
+    - npm install -g fern-api
+    - fern generate --docs --log-level debug
+
+cleanup_preview:
+  stage: cleanup_preview
+  image: node:24
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  script:
+    - npm install -g fern-api
+    - fern docs preview delete "*-preview-${CI_MERGE_REQUEST_IID}.*" || true
+    # ^ ajuste o padrão pro id real usado em preview_docs; a Fern CLI não
+    # documenta wildcard confirmado nesse comando -- teste antes de confiar.

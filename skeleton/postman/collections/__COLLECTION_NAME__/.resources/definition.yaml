@@ -1,0 +1,28 @@
+# Metadados da collection (raiz) -- formato confirmado via `postman collection
+# migrate`/`postman collection lint` (Postman CLI oficial), ver
+# docs/postman-git-native.md. $kind e a chave `name` são obrigatórios; o
+# resto é opcional.
+$kind: collection
+name: __COLLECTION_NAME__
+description: Descreva a API aqui.
+variables:
+  api_version: v1
+scripts:
+  - type: http:beforeRequest
+    code: |-
+      // Script global de pré-requisição, roda antes de toda requisição da collection.
+      console.log('collection pre-request');
+    language: text/javascript
+  - type: http:afterResponse
+    code: |-
+      // Testes globais, rodam depois de toda requisição da collection.
+      pm.test('Tempo de resposta abaixo de 1000ms', function () {
+          pm.expect(pm.response.responseTime).to.be.below(1000);
+      });
+    language: text/javascript
+auth:
+  - id: <gere um uuid v4 novo, ou deixe o Postman Desktop gerar ao editar pela UI>
+    type: bearer
+    name: bearer auth
+    credentials:
+      token: "{{access_token}}"

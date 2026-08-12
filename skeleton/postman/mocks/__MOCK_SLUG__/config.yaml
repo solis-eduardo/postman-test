@@ -1,0 +1,24 @@
+# Formato confirmado: gerado pelo Postman Desktop (clique direito na
+# collection -> "Mock collection", ou similar) a partir dos exemplos salvos.
+# Se preferir, apague esta pasta e deixe o Postman recriar do zero.
+id: <gere um uuid v4 novo, ou deixe o Postman gerar>
+version: 1
+name: __COLLECTION_NAME__
+slug: __MOCK_SLUG__
+enableSession: true
+protocol: http
+port: 3000
+autoRestartOnChange: true
+logging:
+  level: verbose
+  showBody: true
+associations:
+  - entityType: collection
+    entityId: <id da collection no workspace -- preenchido pelo Postman>
+    relation: source
+    syncEnabled: true
+scenarios:
+  - name: default
+    path: ./default.js
+    default: true
+cors: true

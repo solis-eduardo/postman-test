@@ -1,0 +1,14 @@
+# Formato confirmado via Postman CLI oficial (postman collection migrate/lint).
+# Uma requisição = um arquivo. O nome do arquivo (menos ".request.yaml") é o
+# nome exibido.
+$kind: http-request
+description: Endpoint de exemplo -- confirma que a API está no ar.
+url: "{{base_url}}/health"
+method: GET
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 200', () => pm.response.to.have.status(200));
+    language: text/javascript
+examples: ./.resources/Health Check.resources/examples
+order: 1000
