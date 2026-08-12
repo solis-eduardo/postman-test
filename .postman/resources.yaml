@@ -1,0 +1,6 @@
+# Gerado pelo Postman Desktop ao conectar este repositório via Native Git.
+# Liga esta pasta ao workspace do Postman. Não precisa listar nada em
+# localResources porque toda collection/ambiente/spec já mora dentro de postman/
+# (auto-descoberto). Use localResources apenas para arquivos fora de postman/.
+workspace:
+  id: c57071c8-2daa-42b5-9d71-be5c7c63d9c4

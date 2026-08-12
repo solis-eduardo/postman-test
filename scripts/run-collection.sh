@@ -17,12 +17,12 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENV_NAME="${1:-Local}"
 REPORTERS="${2:-cli}"
 
-COLLECTION_DIR="$ROOT_DIR/.postman/collections/PetVerse API"
-ENV_FILE="$ROOT_DIR/.postman/environments/${ENV_NAME}.postman_environment.json"
+COLLECTION_DIR="$ROOT_DIR/postman/collections/PetVerse API"
+ENV_FILE="$ROOT_DIR/postman/environments/${ENV_NAME}.postman_environment.json"
 
 if [[ ! -f "$ENV_FILE" ]]; then
-  echo "Ambiente '$ENV_NAME' não encontrado em .postman/environments/. Ambientes disponíveis:" >&2
-  ls "$ROOT_DIR/.postman/environments" >&2
+  echo "Ambiente '$ENV_NAME' não encontrado em postman/environments/. Ambientes disponíveis:" >&2
+  ls "$ROOT_DIR/postman/environments" >&2
   exit 1
 fi
 

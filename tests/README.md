@@ -4,9 +4,9 @@ A maior parte dos testes funcionais desta API **vive dentro da própria collecti
 como scripts `afterResponse` (o equivalente moderno ao antigo "Tests" tab do Postman),
 seguindo o padrão Git Native:
 
-- Testes **globais** (aplicados a toda requisição): `.postman/collections/PetVerse API/.resources/definition.yaml`
+- Testes **globais** (aplicados a toda requisição): `postman/collections/PetVerse API/.resources/definition.yaml`
   → chave `scripts`, entradas com `type: http:afterResponse`.
-- Testes **por pasta**: `.postman/collections/PetVerse API/<Pasta>/.resources/definition.yaml`.
+- Testes **por pasta**: `postman/collections/PetVerse API/<Pasta>/.resources/definition.yaml`.
 - Testes **por requisição**: dentro do próprio `*.request.yaml`, chave `scripts` com
   `type: afterResponse` (ex.: `Auth/Login.request.yaml`, `Pets/Create Pet.request.yaml`).
 
@@ -36,17 +36,17 @@ Este diretório concentra apenas **massa de dados** para execuções orientadas 
 
 ```bash
 # suíte completa contra o ambiente Local
-npx postman-cli collection run ".postman/collections/PetVerse API" \
-  -e .postman/environments/Local.postman_environment.json
+npx postman-cli collection run "postman/collections/PetVerse API" \
+  -e postman/environments/Local.postman_environment.json
 
 # somente a pasta Pets
-npx postman-cli collection run ".postman/collections/PetVerse API" \
-  -e .postman/environments/Local.postman_environment.json \
+npx postman-cli collection run "postman/collections/PetVerse API" \
+  -e postman/environments/Local.postman_environment.json \
   -i "Pets"
 
 # data-driven: cria um pet para cada linha do CSV
-npx postman-cli collection run ".postman/collections/PetVerse API" \
-  -e .postman/environments/Local.postman_environment.json \
+npx postman-cli collection run "postman/collections/PetVerse API" \
+  -e postman/environments/Local.postman_environment.json \
   -i "Pets/Create Pet" \
   -d tests/data/pets.iteration-data.csv
 ```

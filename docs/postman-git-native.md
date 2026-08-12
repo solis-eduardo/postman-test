@@ -23,8 +23,18 @@ mudou — e só isso.
 
 ## Estrutura gerada
 
+A raiz que o Postman gerencia dentro do repositório é a pasta **`postman/`**
+(sem ponto) — é ela que o app cria automaticamente na primeira vez que abre uma
+pasta via Native Git, com as subpastas `collections/`, `environments/`,
+`specs/`, `documents/`, `flows/`, `globals/` e `mocks/`. Foi confirmado
+observando o próprio Postman Desktop gerar esse esqueleto ao abrir este repo
+(inclusive um `postman/globals/workspace.globals.yaml` vazio). Uma tentativa
+anterior aqui usou `.postman/` (com ponto) como raiz e o app simplesmente não
+reconheceu — o menu "Items" ficava vazio porque ele estava olhando para
+`postman/`, não para `.postman/`.
+
 ```
-.postman/collections/PetVerse API/
+postman/collections/PetVerse API/
 ├── .resources/
 │   └── definition.yaml              # metadados da collection: nome, descrição,
 │                                     # variáveis, auth (bearer) e scripts globais
@@ -68,9 +78,42 @@ um repositório:
 3. Você trabalha com branches, PRs e code review normalmente, como faria com
    qualquer outro código.
 
-Este repositório foi construído para já nascer nesse formato, então basta
-apontar o Native Git do Postman para a pasta `.postman/collections/PetVerse API`
-(ou o repositório inteiro) para começar a editar pela UI também.
+Este repositório foi construído para já nascer nesse formato: basta abrir a
+raiz do repositório (não a subpasta da collection) via Native Git no Postman
+Desktop, que ele reconhece `postman/collections/PetVerse API` como uma
+collection e `postman/environments/*.postman_environment.json` como ambientes
+automaticamente, sem precisar apontar manualmente para nada.
+
+### O arquivo `.postman/resources.yaml`
+
+Além de `postman/`, o app mantém um `.postman/resources.yaml` (com ponto,
+ignorado pelo `.gitignore` do próprio Postman em alguns fluxos, mas aqui optamos
+por deixá-lo versionado) com o id do workspace ao qual o repo está ligado:
+
+```yaml
+workspace:
+  id: <uuid do workspace>
+
+localResources:
+  specs:
+    - ../caminho/para/arquivo/fora/de/postman/
+```
+
+A regra observada na prática: **tudo que está dentro de `postman/` é
+auto-descoberto** — não precisa ser listado. `localResources` só existe para
+registrar arquivos que vivem *fora* de `postman/` (por exemplo, se você
+preferisse manter `specs/openapi.yaml` na raiz do repo em vez de movê-lo para
+`postman/specs/`). Como todo o conteúdo deste repositório já mora dentro de
+`postman/`, esse arquivo tende a ser recriado automaticamente pelo próprio app
+só com a referência do workspace, sem precisar de `localResources`.
+
+Neste repositório optamos por **versionar** `.postman/resources.yaml`: é ele
+que faz qualquer pessoa (ou máquina) que abra a pasta cair automaticamente no
+mesmo workspace, sem configurar nada manualmente — é essencialmente o
+equivalente do Postman a um arquivo de config de projeto compartilhado. Se o
+workspace referenciado for pessoal (não de time), considere adicionar
+`.postman/resources.yaml` ao `.gitignore` em vez disso, para cada colaborador
+apontar para o próprio workspace.
 
 ## Como regenerar/atualizar este layout
 
@@ -81,18 +124,18 @@ depois regerar os arquivos v3:
 # 1. edite/exporte um .postman_collection.json (v2.1)
 # 2. migre para o schema v3 (git-native)
 npx postman-cli collection migrate petverse.postman_collection.json \
-  -o ".postman/collections/PetVerse API"
+  -o "postman/collections/PetVerse API"
 
 # 3. valide o resultado
-npx postman-cli collection lint ".postman/collections/PetVerse API"
+npx postman-cli collection lint "postman/collections/PetVerse API"
 ```
 
 ## Ambientes e specs
 
-- **Ambientes** (`.postman/environments/*.postman_environment.json`) continuam no
+- **Ambientes** (`postman/environments/*.postman_environment.json`) continuam no
   formato clássico (v2.1) de ambiente — é o formato estável e documentado que o
   Postman, a Postman CLI e o Newman entendem hoje.
-- **Spec OpenAPI** (`specs/openapi.yaml`) é a fonte de verdade do contrato da API,
+- **Spec OpenAPI** (`postman/specs/openapi.yaml`) é a fonte de verdade do contrato da API,
   mantida à parte e validada com `@redocly/cli lint` (ver `scripts/lint.sh`). No
   Postman, é comum linkar essa spec à collection para manter as duas em sincronia
   (feature "Generate/validate from spec").

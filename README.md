@@ -12,9 +12,9 @@ não como um único `.postman_collection.json`.
 
 | Caminho | O quê |
 |---|---|
-| `.postman/collections/PetVerse API/` | Collection no formato **v3 / Git Native** — pastas `Auth`, `Owners`, `Pets`, `Appointments`, `System`, cada requisição em seu próprio `*.request.yaml`, com scripts (pre-request/test) e exemplos de resposta |
-| `.postman/environments/` | 4 ambientes (Local, Development, Staging, Production) no formato clássico de ambiente Postman |
-| `specs/openapi.yaml` | Especificação **OpenAPI 3.0** da API — fonte de verdade do contrato, validada com Redocly |
+| `postman/collections/PetVerse API/` | Collection no formato **v3 / Git Native** — pastas `Auth`, `Owners`, `Pets`, `Appointments`, `System`, cada requisição em seu próprio `*.request.yaml`, com scripts (pre-request/test) e exemplos de resposta |
+| `postman/environments/` | 4 ambientes (Local, Development, Staging, Production) no formato clássico de ambiente Postman |
+| `postman/specs/openapi.yaml` | Especificação **OpenAPI 3.0** da API — fonte de verdade do contrato, validada com Redocly |
 | `tests/` | Massa de dados para execuções data-driven (CSV/JSON/dataset) + explicação de onde vivem os testes funcionais |
 | `scripts/` | Scripts de apoio (lint, execução da collection) usando a **Postman CLI** |
 | `docs/postman-git-native.md` | Explicação detalhada do padrão Git Native e da estrutura de arquivos |
@@ -39,8 +39,8 @@ npm test
 npm run test:staging
 
 # rodar só a pasta Pets, gerando um pet por linha do CSV de massa de dados
-npx postman-cli collection run ".postman/collections/PetVerse API" \
-  -e .postman/environments/Local.postman_environment.json \
+npx postman-cli collection run "postman/collections/PetVerse API" \
+  -e postman/environments/Local.postman_environment.json \
   -i "Pets/Create Pet" \
   -d tests/data/pets.iteration-data.csv
 ```
@@ -60,7 +60,7 @@ Essa é a ordem que a coleção assume dentro de cada pasta (`order` nos arquivo
 
 Basta apontar o recurso **Native Git** do Postman (workspace → conectar
 repositório) para este repositório. Ele vai reconhecer
-`.postman/collections/PetVerse API` como uma collection e
-`.postman/environments/*.postman_environment.json` como ambientes.
+`postman/collections/PetVerse API` como uma collection e
+`postman/environments/*.postman_environment.json` como ambientes.
 
 Veja `docs/postman-git-native.md` para o detalhamento completo do formato.

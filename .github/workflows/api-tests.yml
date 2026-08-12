@@ -30,5 +30,5 @@ jobs:
       - name: Rodar a collection PetVerse API
         run: bash scripts/run-collection.sh Local cli
         # Em um repositório real, aponte o ambiente "Local" para um servidor
-        # mock/stub subido neste mesmo job (ex.: Prism a partir de specs/openapi.yaml)
+        # mock/stub subido neste mesmo job (ex.: Prism a partir de postman/specs/openapi.yaml)
         # antes de rodar este passo.
