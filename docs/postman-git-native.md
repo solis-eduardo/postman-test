@@ -237,6 +237,21 @@ npx postman-cli collection lint "postman/collections/PetVerse API"
   resultado — mudamos os 4 nodes para `ignoreTestResults: false`, fazendo o
   flow refletir falha se, por exemplo, `Pet criado com 201` não passar.
 
+## Erros que já enfrentamos (e a causa real)
+
+Assim como documentamos pra Fern (`docs/fern-docs.md`), aqui vai o que já
+apareceu de verdade configurando o Native Git deste repositório:
+
+| Erro | Causa real | Correção |
+|---|---|---|
+| `Add a Git remote to continue` (ao abrir a pasta no Postman Desktop) | O Postman exige um remote git configurado pra continuar — não basta ser um repositório git local solto | `git remote add origin <url>` apontando pra um repositório de verdade (criamos um no GitHub com `gh repo create`) |
+| `The .postman directory is missing` | O `.postman/resources.yaml` (com o `workspace.id`) foi apagado/nunca existiu | Recriar `.postman/resources.yaml` com `workspace: id: <uuid>` — o app volta a reconhecer o vínculo |
+| Menu "Items" fica vazio mesmo com a collection presente no disco | A raiz gerenciada pelo Postman é `postman/` (sem ponto), não `.postman/` (com ponto) — confirmado observando o próprio app criar esse esqueleto | Mover collection/ambientes/specs pra dentro de `postman/` na raiz do repo |
+| `postman/environments/*.postman_environment.json` — "Legacy v2 JSON file found. Convert to v3" | Ambientes ainda tinham o formato clássico (v2.1); a Postman CLI **não tem** comando de migração pra ambientes (só pra collections) | Usar o botão "Convert to v3" do próprio Postman Desktop — reescreve como `<Nome>.environment.yaml` |
+| Spec (`postman/specs/openapi.yaml`) existe no disco mas não aparece no sidebar | Diferente de collections/ambientes, specs **não são auto-descobertas** só por estarem dentro de `postman/specs/` | Registrar explicitamente em `.postman/resources.yaml`, em `localResources.specs` |
+| `Publish support for multi-protocol collections coming soon` (botão Publish docs) | Collections v3/git-native ainda não têm suporte a esse pipeline de publicação — limitação atual da plataforma, não configuração nossa | Ver `## O espelho v2.1 em dist/` abaixo, ou usar o portal Redoc (`docs-pages.yml`) |
+| "Push to Cloud" → `Repository does not match workspace` mesmo com o remote correto | Provável cache do app associando a pasta a um estado antigo (testamos remover o sufixo `.git` da URL do remote, sem efeito) | Fechar e reabrir o Postman Desktop **por completo** (sair do processo, não só a janela) — resolveu no nosso caso |
+
 ## O espelho v2.1 em dist/ (por que existe)
 
 Vários recursos de distribuição do Postman (Publish docs, o botão oficial

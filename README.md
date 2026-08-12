@@ -25,12 +25,98 @@ descrita pela spec/collection.
 | `tests/data/` | Massa de dados para execuções data-driven (CSV/JSON/dataset) da collection |
 | `tests/Feature`, `tests/Unit` | Testes automatizados (Pest) da aplicação Laravel |
 | `scripts/` | Scripts de apoio: lint da collection/spec/Fern, **verificação de alinhamento spec↔collection**, execução da collection |
-| `docs/postman-git-native.md` | Explicação detalhada do padrão Git Native, da estrutura de arquivos e da config da Fern |
+| `docs/postman-git-native.md` | Explicação detalhada do padrão Git Native, estrutura de arquivos e troubleshooting do Postman |
+| `docs/fern-docs.md` | Setup completo da Fern: autenticação, preview/publicação, CI, troubleshooting e equivalente GitLab |
 | `dist/PetVerse API.postman_collection.json` | **Espelho v2.1** da collection, gerado automaticamente (`npm run export:v2`) — usado onde o formato v3 ainda não é aceito (ver "Compartilhando com clientes") |
 | `.github/workflows/api-tests.yml` | CI: lint da collection/spec, alinhamento spec↔collection, checa se `dist/` está atualizado |
 | `.github/workflows/docs-pages.yml` | CI: publica o portal Redoc (`postman/specs/openapi.yaml`) no GitHub Pages a cada push |
 | `.github/workflows/fern-check.yml` | CI: valida `fern/` (`fern check`) em PRs e pushes que tocam a config da Fern ou a spec |
 | `.github/workflows/fern-docs-publish.yml` | CI: publica a Fern Docs (`fern generate --docs`) a cada push em `main` — requer o secret `FERN_TOKEN` |
+
+## Setup do zero (checklist)
+
+Passo a passo pra quem está pegando este repositório pela primeira vez —
+tanto a parte Postman quanto a Fern. Cada passo linka pro detalhe/troubleshooting
+correspondente; siga na ordem, porque cada etapa depende da anterior.
+
+### 1. Clonar e instalar dependências
+
+```bash
+git clone https://github.com/solis-eduardo/postman-test.git
+cd postman-test
+npm install
+```
+
+### 2. Conectar o Postman Desktop (Native Git)
+
+1. No Postman Desktop, abra a **raiz** deste repositório via Native Git
+   (workspace → conectar repositório local).
+2. Se aparecer **"Add a Git remote to continue"**: o repo local não tem
+   remote configurado — não deve acontecer clonando daqui, mas se acontecer,
+   `git remote add origin <url>`.
+3. Se aparecer **"The .postman directory is missing"**: falta
+   `.postman/resources.yaml` — não deve acontecer nesse repo (já está
+   commitado), mas se sumir, veja como recriar em
+   `docs/postman-git-native.md`.
+4. O menu "Items" deve mostrar a collection **PetVerse API** (5 pastas, 16
+   requisições) e 4 ambientes automaticamente. Se aparecer vazio, veja
+   "Erros que já enfrentamos" em `docs/postman-git-native.md`.
+
+### 3. Validar tudo localmente
+
+```bash
+npm run lint
+```
+
+Roda, nessa ordem: lint da collection (v3), validação da spec OpenAPI,
+alinhamento spec↔collection, e `fern check`. Deve terminar sem erros — se
+`fern check` falhar aqui, é só validação estrutural (não precisa de login),
+então normalmente indica um problema real de config em `fern/`.
+
+### 4. Autenticar e configurar a Fern
+
+```bash
+npx fern-api login                                    # autentica via GitHub
+npx fern-api org get                                  # confirma a organização (deve ser "solis-com-br-s-team")
+```
+
+Se der `HTTP 403`, veja a tabela de erros em `docs/fern-docs.md` — geralmente
+é `fern.config.json` com o slug de organização errado.
+
+### 5. Gerar um preview antes de publicar
+
+```bash
+npx fern-api generate --docs --preview --id "meu-teste"
+```
+
+Confirma que a spec/config estão corretas sem afetar o site em produção. Veja
+o link publicado, confira, e apague quando terminar:
+
+```bash
+npx fern-api docs preview delete "<url do preview>"
+```
+
+### 6. Configurar o CI (uma vez só, por quem for mantenedor)
+
+```bash
+npx fern-api token --organization solis-com-br-s-team
+gh secret set FERN_TOKEN --repo solis-eduardo/postman-test --body "<token gerado>"
+```
+
+A partir daqui, todo push em `main` que tocar `fern/**` ou a spec publica
+automaticamente via `.github/workflows/fern-docs-publish.yml`. Detalhes e
+erros comuns desse passo (token de organização errada, domínio já
+registrado) estão em `docs/fern-docs.md`.
+
+### Resumo do que cada validação cobre
+
+| Comando | O que valida |
+|---|---|
+| `npm run lint` | Collection v3 + spec OpenAPI + alinhamento entre as duas + config da Fern |
+| `npm test` | Roda a collection de ponta a ponta contra o ambiente Local |
+| `npm run export:v2` | Regenera o espelho v2.1 em `dist/` (CI falha se ficar desatualizado) |
+| `npm run fern:check` | Só a config da Fern (`fern check`) |
+| `npm run fern:dev` | Preview local da Fern (`fern docs dev`) |
 
 ## Aplicação Laravel (API)
 
@@ -82,10 +168,16 @@ npx postman-cli collection run "postman/collections/PetVerse API" \
   -i "Pets/Create Pet" \
   -d tests/data/pets.iteration-data.csv
 
-# subir o mock local (porta 4500 por padrão) e testar
-cd "postman/mocks/petverse-api" && node default.js &
-curl http://localhost:4500/health
+# subir o mock local na porta que o ambiente Local espera (3001) e testar
+cd "postman/mocks/petverse-api" && PORT=3001 node default.js &
+curl http://localhost:3001/health
 ```
+
+> `default.js` cai pra porta `4500` se `PORT` não for definida — mas o
+> ambiente **Local** (`postman/environments/PetVerse API - Local.environment.yaml`)
+> aponta `base_url` pra `3001` (o mesmo valor de `port` em
+> `postman/mocks/petverse-api/config.yaml`), então rode sempre com
+> `PORT=3001` se for testar a collection contra o mock.
 
 ## Fluxo da API (para rodar de ponta a ponta)
 
@@ -137,42 +229,21 @@ a API uma vez alimenta os três.
 
 ```
 fern/
-├── fern.config.json   # organização (solis) + versão do CLI, pra builds determinísticos
+├── fern.config.json   # organização Fern (solis-com-br-s-team) + versão do CLI
 ├── generators.yml     # api.specs -> ../postman/specs/openapi.yaml (fonte real da API)
-├── docs.yml           # navegação, tema, instância (solis.docs.buildwithfern.com)
+├── docs.yml           # navegação, tema, instância publicada
 └── .gitignore
 ```
 
-> **Nota sobre "Publish docs → Fern" no Postman:** o botão de publicar direto
-> do Postman (collection → "View complete documentation" → Publish → Fern)
-> passa pelo mesmo pipeline de Publish que já vimos bloqueado pra collections
-> v3/git-native ("multi-protocol collections coming soon" — ver seção
-> "Compartilhando com clientes" abaixo). Por isso versionamos a config aqui
-> como **docs-as-code**, independente desse botão: publica direto da spec,
-> sem depender do Publish do Postman funcionar.
-
-### Setup local
-
 ```bash
-npm run fern:check    # valida fern/ + a spec referenciada (roda também no npm run lint e no CI)
+npm run fern:check     # valida fern/ + a spec referenciada
 npm run fern:dev       # preview local (fern docs dev)
 ```
 
-### Publicar
-
-Publicar (`fern generate --docs`) precisa de autenticação, então só roda
-manualmente ou via CI com um secret configurado:
-
-```bash
-npx fern-api login    # autentica via GitHub
-npx fern-api token     # gera um token pra usar em CI
-```
-
-Depois, adicione esse token como secret `FERN_TOKEN` no repositório
-(`gh secret set FERN_TOKEN`) para o workflow
-`.github/workflows/fern-docs-publish.yml` publicar automaticamente a cada
-push em `main`. Sem esse secret, o workflow existe mas falha ao tentar
-publicar — `fern:check` (sem token) continua funcionando normalmente.
+Veja **`docs/fern-docs.md`** para o fluxo completo: autenticação, preview vs.
+produção, configuração do CI (`FERN_TOKEN`), a tabela de erros reais que já
+enfrentamos configurando isso (organização errada, URL duplicada, domínio já
+registrado, token de conta trocada) e o equivalente pra GitLab.
 
 ## Compartilhando com clientes
 
@@ -223,8 +294,8 @@ mesmo mecanismo do item acima.
 ### 4. Sandbox rodando (mock)
 
 O mock em `postman/mocks/petverse-api/` só roda local hoje
-(`node default.js`, porta 4500). Pra virar uma URL pública que um cliente
-acessa sem precisar rodar nada:
+(`PORT=3001 node default.js`, ver "Uso rápido" acima). Pra virar uma URL
+pública que um cliente acessa sem precisar rodar nada:
 - **Nativo do Postman**: clique direito na collection no sidebar → devia
   aparecer "Mock collection" (gera uma URL hospedada pelo Postman a partir dos
   mesmos exemplos). Se esse botão não aparecer, é provável que seja a mesma

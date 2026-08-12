@@ -39,15 +39,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-      - name: Subir o mock local (postman/mocks/petverse-api) na porta 3000
-        # 3000 é a base_url do ambiente "Local"
+      - name: Subir o mock local (postman/mocks/petverse-api) na porta 3001
+        # 3001 é a base_url do ambiente "Local"
         # (postman/environments/PetVerse API - Local.environment.yaml).
         run: |
-          PORT=3000 node "postman/mocks/petverse-api/default.js" &
+          PORT=3001 node "postman/mocks/petverse-api/default.js" &
           for i in $(seq 1 20); do
-            curl -sf http://localhost:3000/health > /dev/null && break
+            curl -sf http://localhost:3001/health > /dev/null && break
             sleep 0.5
           done
-          curl -sf http://localhost:3000/health || { echo "::error::mock não respondeu"; exit 1; }
+          curl -sf http://localhost:3001/health || { echo "::error::mock não respondeu"; exit 1; }
       - name: Rodar a collection PetVerse API contra o mock
         run: bash scripts/run-collection.sh Local cli

@@ -1,0 +1,180 @@
+# Documentação com Fern
+
+A [Fern](https://buildwithfern.com) foi adquirida pela Postman em janeiro de
+2026 ([anúncio oficial](https://blog.postman.com/postman-acquires-fern/)) e é
+a nova plataforma de documentação/SDKs do ecossistema Postman. Este arquivo
+documenta o fluxo completo de configuração e uso da pasta `fern/` deste
+repositório — incluindo os erros reais que enfrentamos configurando pela
+primeira vez, porque são exatamente o tipo de coisa que se repete se alguém
+tiver que reconectar isso do zero.
+
+> Para o "porquê" da collection/ambientes/specs do Postman, veja
+> `docs/postman-git-native.md`. Este arquivo cobre só a Fern.
+
+## Por que `fern/` existe (e não só o botão Publish do Postman)
+
+O Postman tem um botão nativo pra isso: collection → "View complete
+documentation" → ícone de Publish → escolher **Fern**. Só que esse botão
+passa pelo mesmo pipeline de "Publish" que já vimos bloqueado pra collections
+v3/git-native — `"Publish support for multi-protocol collections coming
+soon"`. Então versionamos a config da Fern aqui como **docs-as-code**,
+publicando direto a partir da spec (`postman/specs/openapi.yaml`), sem
+depender desse botão funcionar.
+
+Isso também significa que **a spec é a fonte única**: `fern/generators.yml`
+referencia o mesmo `postman/specs/openapi.yaml` que o portal Redoc
+(`docs-pages.yml`) e a collection já usam — documentar a API numa spec só
+alimenta os três.
+
+## Estrutura
+
+```
+fern/
+├── fern.config.json   # organização Fern + versão do CLI (builds determinísticos)
+├── generators.yml     # api.specs -> ../postman/specs/openapi.yaml (fonte real da API)
+├── docs.yml           # navegação, tema, instância (domínio publicado)
+└── .gitignore
+```
+
+```json
+// fern.config.json
+{
+    "organization": "solis-com-br-s-team",
+    "version": "5.94.0"
+}
+```
+
+```yaml
+# generators.yml
+api:
+  specs:
+    - openapi: ../postman/specs/openapi.yaml
+```
+
+```yaml
+# docs.yml
+instances:
+  - url: solis.docs.buildwithfern.com   # SEM https:// -- ver "Erros que já enfrentamos" abaixo
+title: PetVerse API | Documentação (via fern/ no repo)
+navigation:
+  - api: API Reference
+    paginated: true
+colors:
+  accentPrimary: '#22c55e'
+  background: '#000000'
+```
+
+### `fern init --docs --openapi` NÃO conecta a spec de verdade
+
+Ao gerar essa estrutura pela primeira vez, testamos
+`fern init --docs --openapi postman/specs/openapi.yaml`. O `docs.yml` saiu
+certo, mas **a spec não ficou conectada** — confirmamos removendo o arquivo
+`openapi.yaml` temporariamente e rodando `fern check`: continuou dizendo
+"0 errors" mesmo sem a spec existir, provando que a referência era decorativa.
+
+Quem conecta a spec de verdade é `fern init --api --openapi <path>` (sem
+`--docs`), que gera o `generators.yml` com `api.specs`. Confirmamos com o
+mesmo teste de controle (remover a spec → `fern check` agora reporta
+`Missing file: ../postman/specs/openapi.yaml`). Por isso este repo tem os
+dois arquivos (`generators.yml` do `--api`, `docs.yml` do `--docs`)
+combinados manualmente, não gerados por um único comando.
+
+## Autenticação
+
+```bash
+npx fern-api login     # abre o navegador, autentica via GitHub
+npx fern-api org get   # confirma a organização ativa (deve bater com fern.config.json)
+```
+
+Se `fern org get` retornar `HTTP 403 — You do not have permission to access
+files for the specified organization`, a organização em `fern.config.json`
+está errada **ou** a conta logada não tem acesso a ela — ver "Erros que já
+enfrentamos" abaixo antes de ficar tentando slugs diferentes no escuro.
+
+## Setup local
+
+```bash
+npm run fern:check    # valida fern/ + a spec referenciada (roda também no npm run lint e no CI)
+npm run fern:dev      # preview local (fern docs dev)
+```
+
+## Fluxo: preview antes de produção
+
+**Sempre valide num preview antes de publicar em produção** — é rápido, não
+afeta o site real, e pega problemas de config cedo (foi assim que achamos o
+bug do `https://` duplicado, ver abaixo).
+
+```bash
+# gera um preview com id estável (reexecutar com o mesmo --id sobrescreve a URL)
+npx fern-api generate --docs --preview --id "minha-mudanca"
+# -> publica em algo como https://solis-com-br-s-team-preview-minha-mudanca.docs.buildwithfern.com
+
+# lista todos os previews ativos da organização
+npx fern-api docs preview list
+
+# apaga um preview quando não precisar mais
+npx fern-api docs preview delete "solis-com-br-s-team-preview-minha-mudanca.docs.buildwithfern.com"
+```
+
+Publicar em produção de verdade (sem `--preview`) pede confirmação
+interativa, porque afeta o domínio real:
+
+```bash
+npx fern-api generate --docs --log-level debug
+```
+
+## CI
+
+- **`.github/workflows/fern-check.yml`** — roda `fern check` em PRs/pushes
+  que tocam `fern/**` ou a spec. Não precisa de token (validação estrutural).
+- **`.github/workflows/fern-docs-publish.yml`** — roda
+  `fern generate --docs` a cada push em `main`. **Precisa do secret
+  `FERN_TOKEN`** no repositório:
+
+  ```bash
+  npx fern-api login
+  npx fern-api token --organization solis-com-br-s-team
+  gh secret set FERN_TOKEN --repo solis-eduardo/postman-test --body "<token gerado>"
+  ```
+
+  > O comando `gh secret set` grava um valor sensível — o harness do Claude
+  > Code bloqueia isso em modo automático por padrão. Rode você mesmo no
+  > terminal; eu não tenho como executar esse passo sozinho.
+
+## Erros que já enfrentamos (e a causa real, não a genérica)
+
+Estes já aconteceram configurando este repositório — documentados porque vão
+se repetir se alguém reconectar do zero ou trocar de organização/domínio.
+
+| Erro | Causa real | Correção |
+|---|---|---|
+| `Domain "X" is already registered to another organization` (ao publicar) | `fern.config.json` tinha um slug de organização **diferente** da que já é dona do domínio configurado em `docs.yml` — no nosso caso, chutei `"solis"` (um slug genérico) quando a org real (criada pelo fluxo Postman → Publish → Fern) tinha um slug diferente | Achar o slug real: dashboard da Fern mostra em "Source" algo como `fern-starter/<org-real>` (a org fica **depois** da barra, não é o nome do template `fern-starter`) — ou peça pra rodar `npx fern-api login && npx fern-api org get` e usar o `orgId` retornado |
+| `HTTP 403 — You do not have permission to access files for the specified organization` (`fern org get`) | Slug de organização errado em `fern.config.json`, ou a conta logada (`fern login`) não pertence a essa organização | Corrigir `fern.config.json` pro slug certo; se persistir, confirmar que logou com a conta certa (`fern logout && fern login`) |
+| `FDR registerApiDefinition failed... "User does not belong to organization"` (só no CI, `fern-docs-publish.yml`) | O secret `FERN_TOKEN` no GitHub foi gerado **antes** de descobrir o slug/conta certos — o token em si pertence a outra organização, mesmo com `fern.config.json` já corrigido localmente | Gerar um token novo *depois* de confirmar `fern org get` funciona localmente (`npx fern-api token --organization <org>`) e atualizar o secret (`gh secret set FERN_TOKEN`) |
+| URL mostrada como `https://https://dominio...` (duplicada) ao rodar `fern generate --docs` | `docs.yml`'s `instances[].url` tinha o prefixo `https://` — o campo espera só o domínio puro (`dominio.docs.buildwithfern.com`), a CLI adiciona o esquema sozinha | Remover `https://` de `instances[].url` em `docs.yml` |
+| Site publicado mostra só `<title>Documentation</title>` genérico, sem o conteúdo | A URL real estava redirecionando pra uma tela de login (`/~login?returnTo=...`) — o site estava protegido, então o "conteúdo" que carregava era a página de login | Verificar configuração de visibilidade/access control do site no dashboard da Fern (não encontramos comando de CLI pra isso) — e/ou terminar a etapa "Finish custom domain setup" pendente no dashboard |
+| Site não aparece em "Domains" no dashboard, mas o link do preview funciona | Previews (`--preview --id`) são deploys efêmeros num namespace à parte (`<org>-preview-<id>.docs.buildwithfern.com`), geridos via `fern docs preview list/delete`, não pela tela principal de domínios | Não é um bug — usar `fern docs preview list` pra ver/gerenciar previews |
+
+## Equivalente para GitLab
+
+A Fern **não tem um app dedicado do GitLab** (diferente do GitHub, que cria
+repositório automaticamente via app quando você publica pelo Postman). A
+integração é só via pipeline CI/CD, no mesmo espírito do
+`fern-check.yml`/`fern-docs-publish.yml` deste repo, só que em
+`.gitlab-ci.yml` ([fonte](https://buildwithfern.com/learn/docs/developer-tools/git-lab)):
+
+| Stage | Gatilho | Ação |
+|---|---|---|
+| `check` | MRs e branch principal | `fern check` |
+| `preview_docs` | Só em MRs | `fern generate --docs --preview`, comenta o link no MR |
+| `publish_docs` | Merge na branch principal | `fern generate --docs` (produção) |
+| `cleanup_preview` | Merge na branch principal | Apaga o preview do MR mergeado |
+
+Variáveis de CI/CD necessárias no GitLab:
+
+- `FERN_TOKEN` — mesmo token gerado por `fern token`, sem proteção de branch.
+- `REPO_TOKEN` — um Project Access Token do GitLab (role **Reporter**, scope
+  **api**), usado só pra comentar o link do preview no MR.
+
+`fern/` em si não muda nada — é agnóstico de onde o Git está hospedado. Self-managed/on-premise GitLab não é
+explicitamente documentado pela Fern; os exemplos assumem `gitlab.com`.
