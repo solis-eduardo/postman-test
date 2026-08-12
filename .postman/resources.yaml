@@ -3,3 +3,19 @@ workspace:
 localResources:
   specs:
     - ../postman/specs/openapi.yaml
+cloudResources:
+  collections:
+    ../postman/collections/PetVerse API: 3512728-9a5161f2-75bb-4f8f-9007-ef28d05df92f
+  environments:
+    ../postman/environments/PetVerse API - Development.environment.yaml: 3512728-f8bb4d9c-1040-4f12-b5db-011c1992ddde
+    ../postman/environments/PetVerse API - Local.environment.yaml: 3512728-114b002b-f01e-4db6-9ee5-e4fbaa0c05b8
+    ../postman/environments/PetVerse API - Production.environment.yaml: 3512728-0e113449-de8d-41a9-be71-88cba488b150
+    ../postman/environments/PetVerse API - Staging.environment.yaml: 3512728-e72febc4-b86b-4162-ae68-1ad4ea562062
+  specs:
+    ../postman/specs/openapi.yaml: cff9ef8c-762c-4279-9e9a-e6cc5fa36545
+  documents:
+    ../postman/documents/Guia da API PetVerse.md: 4754dea9-870e-4d59-b6d9-4fa14395fc0a
+  flows:
+    ../postman/flows/New flow.flow: 6a7c64967410e199a51558cb
+  globals:
+    ../postman/globals/workspace.globals.yaml: 5b86ff9b-627c-473a-8714-b2fadcac796d

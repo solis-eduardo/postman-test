@@ -6,7 +6,3 @@ values:
     value: tutor@petverse.dev
   - key: user_password
     value: s3nha-super-secreta
-  - key: access_token
-    value: ''
-  - key: refresh_token
-    value: ''

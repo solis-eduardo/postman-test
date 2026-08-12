@@ -14,8 +14,10 @@ body:
     }
 scripts:
   - type: afterResponse
-    code: |-
-      pm.test('Consulta agendada com 201', () => pm.response.to.have.status(201));
+    code: >-
+      pm.test('Consulta agendada com 201', () =>
+      pm.response.to.have.status(201));
+
       if (pm.response.code === 201) {
           pm.collectionVariables.set('appointment_id', pm.response.json().id);
       }

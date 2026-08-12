@@ -223,6 +223,16 @@ npx postman-cli collection lint "postman/collections/PetVerse API"
   - `targetPort: "AI"` se confirmou como o nome fixo da porta de entrada de
     `task/http-request@2`, indiferente de quem é a origem.
 
+  **`ignoreTestResults`:** cada node `task/http-request@2` tem essa flag em
+  `config`. Copiamos `true` do node de `Login` (valor original gerado pelo
+  Postman) pros outros 3 nodes sem reparar no que significava — na prática,
+  com `true`, o flow roda a requisição mas **ignora se os `pm.test(...)` dela
+  passaram ou falharam**, só encadeia a resposta pro próximo node. As 16
+  requisições da collection têm 100% de cobertura de teste (`afterResponse`
+  em todo `*.request.yaml`), então faz mais sentido o flow **respeitar** esse
+  resultado — mudamos os 4 nodes para `ignoreTestResults: false`, fazendo o
+  flow refletir falha se, por exemplo, `Pet criado com 201` não passar.
+
 ## O espelho v2.1 em dist/ (por que existe)
 
 Vários recursos de distribuição do Postman (Publish docs, o botão oficial
