@@ -15,8 +15,9 @@ não como um único `.postman_collection.json`.
 | `postman/collections/PetVerse API/` | Collection no formato **v3 / Git Native** — pastas `Auth`, `Owners`, `Pets`, `Appointments`, `System`, cada requisição em seu próprio `*.request.yaml`, com scripts (pre-request/test) e exemplos de resposta |
 | `postman/environments/` | 4 ambientes (Local, Development, Staging, Production) no formato **v3** (`*.environment.yaml`) |
 | `postman/specs/openapi.yaml` | Especificação **OpenAPI 3.0** da API — fonte de verdade do contrato, validada com Redocly |
+| `postman/documents/` | Documentação de referência da API, exposta como "Documents" no workspace |
 | `tests/` | Massa de dados para execuções data-driven (CSV/JSON/dataset) + explicação de onde vivem os testes funcionais |
-| `scripts/` | Scripts de apoio (lint, execução da collection) usando a **Postman CLI** |
+| `scripts/` | Scripts de apoio: lint da collection/spec, **verificação de alinhamento spec↔collection**, execução da collection |
 | `docs/postman-git-native.md` | Explicação detalhada do padrão Git Native e da estrutura de arquivos |
 | `.github/workflows/api-tests.yml` | CI de exemplo: lint da collection/spec + execução via Postman CLI |
 
@@ -55,6 +56,25 @@ npx postman-cli collection run "postman/collections/PetVerse API" \
 
 Essa é a ordem que a coleção assume dentro de cada pasta (`order` nos arquivos
 `*.request.yaml`), então um `postman collection run` sem filtros já segue esse fluxo.
+
+## Mantendo a spec e a collection alinhadas
+
+Nada impede alguém de adicionar uma requisição só na collection (pela UI) ou só
+um path na spec (editando `postman/specs/openapi.yaml`) e esquecer do outro
+lado. `scripts/check_spec_alignment.py` compara os dois: lê todos os
+`METHOD /path` da spec e todos os `*.request.yaml` da collection, normaliza
+(`{{base_url}}`, `{{api_version}}`, `:param` → `{param}`) e aponta qualquer
+endpoint que exista só de um lado. Já roda como parte de `npm run lint` e do CI.
+
+```bash
+python3 scripts/check_spec_alignment.py
+```
+
+No app Postman, o caminho nativo pra isso é **linkar a spec à collection**
+(API Builder → "Define" → apontar para `postman/specs/openapi.yaml`, depois
+"Generate collection" ou "Validate") — o Postman então sinaliza divergências
+direto na UI. O script acima é o mesmo tipo de checagem, mas versionado e
+rodável no CI sem depender da UI.
 
 ## Editando pelo app Postman
 

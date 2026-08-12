@@ -144,3 +144,42 @@ npx postman-cli collection lint "postman/collections/PetVerse API"
   funciona normalmente), só não sabe **gerar/migrar** ainda.
 - **Spec OpenAPI** (`postman/specs/openapi.yaml`) é a fonte de verdade do contrato da API,
   mantida à parte e validada com `@redocly/cli lint` (ver `scripts/lint.sh`).
+  Diferente de collections e ambientes, ela **não é auto-descoberta** só por
+  estar dentro de `postman/specs/` — precisou ser registrada explicitamente em
+  `.postman/resources.yaml`, em `localResources.specs`. Sem essa entrada, o
+  arquivo existe em disco mas não aparece no menu "Items" do app.
+- **Alinhamento spec ↔ collection**: nada garante automaticamente que todo
+  endpoint da spec tem uma requisição correspondente na collection (e
+  vice-versa) — são dois artefatos editados separadamente. `scripts/check_spec_alignment.py`
+  faz essa checagem localmente (parseia os `paths` do OpenAPI e os `method`/`url`
+  de cada `*.request.yaml`, normaliza `{{base_url}}`/`{{api_version}}`/`:param`
+  e compara os dois conjuntos) e roda como parte de `npm run lint` e do CI. No
+  app Postman, o equivalente nativo é linkar a spec à collection via API
+  Builder ("Define" → "Generate collection" / "Validate"), que sinaliza drift
+  direto na UI.
+
+## Documents, Flows e Mocks
+
+- **Documents** (`postman/documents/*.md`) — Markdown puro. Criamos um exemplo
+  (`Guia da API PetVerse.md`) com o mesmo raciocínio da spec: baixo risco, já
+  que mesmo que o Postman não reconheça o arquivo como um "Document" formal,
+  ele continua sendo Markdown válido e útil. **Ainda não confirmamos** se ele
+  aparece listado no app — se não aparecer, o próximo passo é o mesmo usado
+  para specs: registrar em `localResources` no `.postman/resources.yaml`.
+- **Flows** e **Mocks** ficaram **sem exemplo de propósito**. Os dois têm
+  formatos que não dá pra chutar com segurança:
+  - Flows são grafos visuais (nós/conexões) — não há um schema JSON/YAML
+    simples e documentado publicamente para escrever um `.flow` à mão.
+  - Mocks locais (`postman mock run <manifest>`, testado via Postman CLI)
+    exigem um handler JavaScript próprio (`mockSrc`) ou um `.sim.yaml` de
+    fault-injection — não um "replay" declarativo dos exemplos já salvos na
+    collection. O caminho realmente simples para mock aqui é o nativo do
+    Postman: botão direito na collection → "Mock collection" (usa as
+    respostas de exemplo que já estão em
+    `postman/collections/PetVerse API/**/.resources/**/examples/*.example.yaml`),
+    que roda na nuvem do Postman sem precisar de nenhum arquivo local.
+
+  Se quiser um Flow ou Mock local de verdade neste repo, o caminho mais seguro
+  é criar um mínimo pela UI do Postman e a partir do arquivo gerado eu adapto/
+  documento o padrão real — o mesmo método que resolveu o formato de
+  ambientes e o registro da spec.

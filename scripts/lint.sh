@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
-# Valida a collection Postman (formato v3 / git-native) e a especificação OpenAPI.
+# Valida a collection Postman (formato v3 / git-native), a especificação OpenAPI
+# e o alinhamento entre as duas (mesmos endpoints dos dois lados).
 #
 # Requer:
 #   - Postman CLI: https://learning.postman.com/docs/postman-cli/postman-cli-installation/
 #     (ou `npm install postman-cli` e usar via npx, como abaixo)
+#   - Python 3 + PyYAML (`pip install pyyaml`)
 #
 # Uso:
 #   ./scripts/lint.sh
@@ -19,4 +21,7 @@ echo "==> Validação da especificação OpenAPI: postman/specs/openapi.yaml"
 npx --yes @redocly/cli lint "$ROOT_DIR/postman/specs/openapi.yaml" || \
   npx --yes @apidevtools/swagger-cli validate "$ROOT_DIR/postman/specs/openapi.yaml"
 
-echo "==> OK: collection e spec válidas."
+echo "==> Verificando alinhamento spec <-> collection (mesmos endpoints dos dois lados)"
+python3 "$ROOT_DIR/scripts/check_spec_alignment.py"
+
+echo "==> OK: collection e spec válidas e alinhadas."

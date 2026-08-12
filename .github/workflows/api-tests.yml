@@ -15,7 +15,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Lint da collection (v3 / git-native) e da spec OpenAPI
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - run: pip install pyyaml
+      - name: Lint da collection (v3 / git-native), da spec OpenAPI e alinhamento entre as duas
         run: bash scripts/lint.sh
 
   run-collection:
