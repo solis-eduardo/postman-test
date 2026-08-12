@@ -11,7 +11,7 @@
         "lint": "bash scripts/lint.sh",
         "test": "bash scripts/run-collection.sh Local cli",
         "test:staging": "bash scripts/run-collection.sh Staging cli",
-        "export:v2": "python3 scripts/export_v2_collection.py && node scripts/normalize_v2_collection.js \"dist/PetVerse API.postman_collection.json\""
+        "export:v2": "python3 scripts/export_v2_collection.py && node scripts/normalize_v2_collection.cjs \"dist/PetVerse API.postman_collection.json\""
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",

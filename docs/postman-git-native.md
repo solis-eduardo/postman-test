@@ -250,7 +250,7 @@ clássico, que esses recursos entendem:
   `prerequest`/`test`), pastas e requests na ordem dada pelo campo `order` de
   cada `definition.yaml`/`request.yaml`, exemplos (`*.example.yaml` →
   `response[]`).
-- `scripts/normalize_v2_collection.js` — segunda etapa, via o SDK oficial
+- `scripts/normalize_v2_collection.cjs` — segunda etapa, via o SDK oficial
   (`postman-collection`, a lib que Postman/Newman usam por baixo dos panos).
   Necessária porque um `url: {raw: "..."}` sozinho (sem `host`/`path`/`query`
   estruturados) **não é reconstruído** pelo parser do SDK — testamos e

@@ -13,7 +13,7 @@
  * JSON final.
  *
  * Uso:
- *   node scripts/normalize_v2_collection.js "dist/PetVerse API.postman_collection.json"
+ *   node scripts/normalize_v2_collection.cjs "dist/PetVerse API.postman_collection.json"
  */
 const fs = require("fs");
 const path = require("path");
@@ -21,7 +21,7 @@ const sdk = require("postman-collection");
 
 const file = process.argv[2];
 if (!file) {
-  console.error("Uso: node normalize_v2_collection.js <arquivo.json>");
+  console.error("Uso: node normalize_v2_collection.cjs <arquivo.json>");
   process.exit(2);
 }
 
