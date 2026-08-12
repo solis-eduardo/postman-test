@@ -1,0 +1,12 @@
+name: PetVerse API - Development
+values:
+  - key: base_url
+    value: 'https://api.dev.petverse.example.com'
+  - key: user_email
+    value: tutor.dev@petverse.dev
+  - key: user_password
+    value: '{{DEV_USER_PASSWORD}}'
+  - key: access_token
+    value: ''
+  - key: refresh_token
+    value: ''

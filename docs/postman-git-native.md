@@ -81,7 +81,7 @@ um repositório:
 Este repositório foi construído para já nascer nesse formato: basta abrir a
 raiz do repositório (não a subpasta da collection) via Native Git no Postman
 Desktop, que ele reconhece `postman/collections/PetVerse API` como uma
-collection e `postman/environments/*.postman_environment.json` como ambientes
+collection e `postman/environments/*.environment.yaml` como ambientes
 automaticamente, sem precisar apontar manualmente para nada.
 
 ### O arquivo `.postman/resources.yaml`
@@ -132,10 +132,15 @@ npx postman-cli collection lint "postman/collections/PetVerse API"
 
 ## Ambientes e specs
 
-- **Ambientes** (`postman/environments/*.postman_environment.json`) continuam no
-  formato clássico (v2.1) de ambiente — é o formato estável e documentado que o
-  Postman, a Postman CLI e o Newman entendem hoje.
+- **Ambientes** também têm um formato v3 (`postman/environments/*.environment.yaml`,
+  chaves `name` + `values: [{key, value}]`). Diferente das collections, a
+  **Postman CLI ainda não tem um comando `environment migrate`** — quem faz essa
+  conversão hoje é só o próprio Postman Desktop: ele detecta um
+  `.postman_environment.json` (v2.1) solto na pasta `postman/environments/` e
+  oferece "Convert to v3" na UI, que reescreve o arquivo como
+  `<Nome>.environment.yaml` e apaga o `.json` antigo. Foi assim que os 4
+  ambientes deste repositório foram convertidos — não escrevemos esse YAML à
+  mão. A CLI já sabe **ler** o formato novo (`collection run -e arquivo.environment.yaml`
+  funciona normalmente), só não sabe **gerar/migrar** ainda.
 - **Spec OpenAPI** (`postman/specs/openapi.yaml`) é a fonte de verdade do contrato da API,
-  mantida à parte e validada com `@redocly/cli lint` (ver `scripts/lint.sh`). No
-  Postman, é comum linkar essa spec à collection para manter as duas em sincronia
-  (feature "Generate/validate from spec").
+  mantida à parte e validada com `@redocly/cli lint` (ver `scripts/lint.sh`).

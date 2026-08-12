@@ -18,7 +18,7 @@ ENV_NAME="${1:-Local}"
 REPORTERS="${2:-cli}"
 
 COLLECTION_DIR="$ROOT_DIR/postman/collections/PetVerse API"
-ENV_FILE="$ROOT_DIR/postman/environments/${ENV_NAME}.postman_environment.json"
+ENV_FILE="$ROOT_DIR/postman/environments/PetVerse API - ${ENV_NAME}.environment.yaml"
 
 if [[ ! -f "$ENV_FILE" ]]; then
   echo "Ambiente '$ENV_NAME' não encontrado em postman/environments/. Ambientes disponíveis:" >&2

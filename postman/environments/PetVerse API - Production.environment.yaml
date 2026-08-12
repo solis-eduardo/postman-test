@@ -1,0 +1,12 @@
+name: PetVerse API - Production
+values:
+  - key: base_url
+    value: 'https://api.petverse.example.com'
+  - key: user_email
+    value: '{{PROD_USER_EMAIL}}'
+  - key: user_password
+    value: '{{PROD_USER_PASSWORD}}'
+  - key: access_token
+    value: ''
+  - key: refresh_token
+    value: ''

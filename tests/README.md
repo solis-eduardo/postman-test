@@ -37,16 +37,16 @@ Este diretório concentra apenas **massa de dados** para execuções orientadas 
 ```bash
 # suíte completa contra o ambiente Local
 npx postman-cli collection run "postman/collections/PetVerse API" \
-  -e postman/environments/Local.postman_environment.json
+  -e "postman/environments/PetVerse API - Local.environment.yaml"
 
 # somente a pasta Pets
 npx postman-cli collection run "postman/collections/PetVerse API" \
-  -e postman/environments/Local.postman_environment.json \
+  -e "postman/environments/PetVerse API - Local.environment.yaml" \
   -i "Pets"
 
 # data-driven: cria um pet para cada linha do CSV
 npx postman-cli collection run "postman/collections/PetVerse API" \
-  -e postman/environments/Local.postman_environment.json \
+  -e "postman/environments/PetVerse API - Local.environment.yaml" \
   -i "Pets/Create Pet" \
   -d tests/data/pets.iteration-data.csv
 ```
