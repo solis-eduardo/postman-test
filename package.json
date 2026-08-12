@@ -11,11 +11,15 @@
         "lint": "bash scripts/lint.sh",
         "test": "bash scripts/run-collection.sh Local cli",
         "test:staging": "bash scripts/run-collection.sh Staging cli",
-        "export:v2": "python3 scripts/export_v2_collection.py && node scripts/normalize_v2_collection.cjs \"dist/PetVerse API.postman_collection.json\""
+        "export:v2": "python3 scripts/export_v2_collection.py && node scripts/normalize_v2_collection.cjs \"dist/PetVerse API.postman_collection.json\"",
+        "fern:check": "fern check",
+        "fern:dev": "fern docs dev",
+        "fern:publish": "fern generate --docs --log-level debug"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",
         "concurrently": "^10.0.3",
+        "fern-api": "^5.94.0",
         "laravel-vite-plugin": "^3.1",
         "postman-cli": "^1.45.0",
         "postman-collection": "^5.3.1",

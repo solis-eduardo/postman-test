@@ -1,0 +1,34 @@
+name: publish-fern-docs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "fern/**"
+      - "postman/specs/openapi.yaml"
+      - ".github/workflows/fern-docs-publish.yml"
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "24"
+
+      - name: Setup Fern CLI
+        uses: fern-api/setup-fern-cli@v1
+
+      - name: Publish docs (https://solis.docs.buildwithfern.com)
+        env:
+          FERN_TOKEN: ${{ secrets.FERN_TOKEN }}
+        run: fern generate --docs --log-level debug
+        # Requer o secret FERN_TOKEN no repositório:
+        #   1. `npx fern-api login` localmente (ou `fern login` com a CLI instalada)
+        #   2. `npx fern-api token` para gerar um token de CI
+        #   3. gh secret set FERN_TOKEN --repo solis-eduardo/postman-test --body "<token>"

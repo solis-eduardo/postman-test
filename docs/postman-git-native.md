@@ -10,6 +10,10 @@ conecta um workspace a um repositório Git.
 > (`postman collection migrate` / `postman collection lint`), não escrito à mão —
 > garantindo que corresponde ao schema real, e não a uma aproximação.
 
+> A documentação publicada da API (Fern, adquirida pela Postman) tem sua
+> própria config em `fern/`, coberta na seção "Documentação com Fern" do
+> `README.md` — este arquivo cobre só o formato da collection/ambientes/etc.
+
 ## Por que isso existe
 
 O formato antigo (v2.1) é um único arquivo JSON com a collection inteira. Isso é

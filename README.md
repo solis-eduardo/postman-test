@@ -21,13 +21,16 @@ descrita pela spec/collection.
 | `postman/documents/` | Documentação de referência da API, exposta como "Documents" no workspace |
 | `postman/mocks/petverse-api/` | Mock server local (Node puro) gerado a partir da collection, com respostas revisadas |
 | `postman/flows/` | Flow de exemplo: trigger HTTP → Login → Create Owner → Create Pet → Create Appointment |
+| `fern/` | Config da **Fern Docs** (adquirida pela Postman) — `generators.yml` referencia `postman/specs/openapi.yaml` como fonte da API; publica em https://solis.docs.buildwithfern.com |
 | `tests/data/` | Massa de dados para execuções data-driven (CSV/JSON/dataset) da collection |
 | `tests/Feature`, `tests/Unit` | Testes automatizados (Pest) da aplicação Laravel |
-| `scripts/` | Scripts de apoio: lint da collection/spec, **verificação de alinhamento spec↔collection**, execução da collection |
-| `docs/postman-git-native.md` | Explicação detalhada do padrão Git Native e da estrutura de arquivos |
+| `scripts/` | Scripts de apoio: lint da collection/spec/Fern, **verificação de alinhamento spec↔collection**, execução da collection |
+| `docs/postman-git-native.md` | Explicação detalhada do padrão Git Native, da estrutura de arquivos e da config da Fern |
 | `dist/PetVerse API.postman_collection.json` | **Espelho v2.1** da collection, gerado automaticamente (`npm run export:v2`) — usado onde o formato v3 ainda não é aceito (ver "Compartilhando com clientes") |
 | `.github/workflows/api-tests.yml` | CI: lint da collection/spec, alinhamento spec↔collection, checa se `dist/` está atualizado |
 | `.github/workflows/docs-pages.yml` | CI: publica o portal Redoc (`postman/specs/openapi.yaml`) no GitHub Pages a cada push |
+| `.github/workflows/fern-check.yml` | CI: valida `fern/` (`fern check`) em PRs e pushes que tocam a config da Fern ou a spec |
+| `.github/workflows/fern-docs-publish.yml` | CI: publica a Fern Docs (`fern generate --docs`) a cada push em `main` — requer o secret `FERN_TOKEN` |
 
 ## Aplicação Laravel (API)
 
@@ -122,6 +125,54 @@ repositório) para este repositório. Ele vai reconhecer
 `postman/environments/*.environment.yaml` como ambientes.
 
 Veja `docs/postman-git-native.md` para o detalhamento completo do formato.
+
+## Documentação com Fern
+
+A [Fern](https://buildwithfern.com) foi adquirida pela Postman em janeiro de
+2026 e é a nova plataforma de documentação/SDKs. A pasta `fern/` versiona a
+configuração de um site de docs gerado a partir da nossa spec — **fonte de
+verdade única**: `fern/generators.yml` referencia `postman/specs/openapi.yaml`
+(o mesmo arquivo que o portal Redoc e a collection já usam), então documentar
+a API uma vez alimenta os três.
+
+```
+fern/
+├── fern.config.json   # organização (solis) + versão do CLI, pra builds determinísticos
+├── generators.yml     # api.specs -> ../postman/specs/openapi.yaml (fonte real da API)
+├── docs.yml           # navegação, tema, instância (solis.docs.buildwithfern.com)
+└── .gitignore
+```
+
+> **Nota sobre "Publish docs → Fern" no Postman:** o botão de publicar direto
+> do Postman (collection → "View complete documentation" → Publish → Fern)
+> passa pelo mesmo pipeline de Publish que já vimos bloqueado pra collections
+> v3/git-native ("multi-protocol collections coming soon" — ver seção
+> "Compartilhando com clientes" abaixo). Por isso versionamos a config aqui
+> como **docs-as-code**, independente desse botão: publica direto da spec,
+> sem depender do Publish do Postman funcionar.
+
+### Setup local
+
+```bash
+npm run fern:check    # valida fern/ + a spec referenciada (roda também no npm run lint e no CI)
+npm run fern:dev       # preview local (fern docs dev)
+```
+
+### Publicar
+
+Publicar (`fern generate --docs`) precisa de autenticação, então só roda
+manualmente ou via CI com um secret configurado:
+
+```bash
+npx fern-api login    # autentica via GitHub
+npx fern-api token     # gera um token pra usar em CI
+```
+
+Depois, adicione esse token como secret `FERN_TOKEN` no repositório
+(`gh secret set FERN_TOKEN`) para o workflow
+`.github/workflows/fern-docs-publish.yml` publicar automaticamente a cada
+push em `main`. Sem esse secret, o workflow existe mas falha ao tentar
+publicar — `fern:check` (sem token) continua funcionando normalmente.
 
 ## Compartilhando com clientes
 

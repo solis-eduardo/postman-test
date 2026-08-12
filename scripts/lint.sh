@@ -24,4 +24,7 @@ npx --yes @redocly/cli lint "$ROOT_DIR/postman/specs/openapi.yaml" || \
 echo "==> Verificando alinhamento spec <-> collection (mesmos endpoints dos dois lados)"
 python3 "$ROOT_DIR/scripts/check_spec_alignment.py"
 
-echo "==> OK: collection e spec válidas e alinhadas."
+echo "==> Validando config da Fern (fern/) e a definição da API que ela referencia"
+npx --yes fern-api check
+
+echo "==> OK: collection, spec e docs da Fern válidas e alinhadas."
