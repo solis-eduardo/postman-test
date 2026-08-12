@@ -24,7 +24,7 @@ servers:
     description: Local
 
 tags:
-  - name: Auth
+  - name: Autenticação
     description: Autenticação e ciclo de vida do token de acesso.
   - name: Owners
     description: Cadastro de tutores (donos dos pets).
@@ -38,7 +38,7 @@ tags:
 paths:
   /v1/auth/login:
     post:
-      tags: [Auth]
+      tags: [Autenticação]
       summary: Autentica um usuário
       operationId: login
       security: []
@@ -63,7 +63,7 @@ paths:
 
   /v1/auth/refresh:
     post:
-      tags: [Auth]
+      tags: [Autenticação]
       summary: Renova o access_token
       operationId: refreshToken
       security: []
@@ -89,7 +89,7 @@ paths:
 
   /v1/auth/logout:
     post:
-      tags: [Auth]
+      tags: [Autenticação]
       summary: Invalida o refresh_token atual
       operationId: logout
       responses:

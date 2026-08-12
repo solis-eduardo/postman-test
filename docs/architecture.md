@@ -94,6 +94,12 @@ que publica numa URL efêmera à parte
 qualquer publicação real. Fluxo completo, incluindo autenticação/token de CI,
 em `docs/fern-docs.md`.
 
+**Importante:** a Fern nunca lê a collection do Postman — só a spec. Renomear
+uma pasta na UI do Postman (ex.: `Auth` → `Autenticação`) não muda nada no
+site publicado; quem controla o agrupamento/navegação da Fern são as `tags`
+de `postman/specs/openapi.yaml`. É o mesmo padrão da tabela acima: cada
+sistema lê uma fonte específica, nada sincroniza sozinho entre eles.
+
 Fern também pode editar o repositório **de fora pra dentro**: o "Fern
 Editor" (browser, linkado à documentação publicada) commita direto no
 GitHub — foi assim que o valor de `fern.config.json` foi corrigido durante a
