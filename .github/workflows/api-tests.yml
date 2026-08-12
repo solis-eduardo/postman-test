@@ -14,8 +14,8 @@ jobs:
     permissions:
       contents: write   # necessário só pro auto-commit do dist/ em push na main
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
       - uses: actions/setup-python@v5
@@ -52,8 +52,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: lint
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
       - name: Subir o mock local (postman/mocks/petverse-api)
