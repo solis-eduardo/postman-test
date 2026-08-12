@@ -21,6 +21,14 @@ jobs:
       - run: pip install pyyaml
       - name: Lint da collection (v3 / git-native), da spec OpenAPI e alinhamento entre as duas
         run: bash scripts/lint.sh
+      - run: npm install
+      - name: Regenerar o espelho v2.1 (dist/) e falhar se estiver desatualizado
+        run: |
+          npm run export:v2
+          git diff --exit-code -- dist/ || {
+            echo "::error::dist/ está desatualizado — rode 'npm run export:v2' e commite o resultado.";
+            exit 1;
+          }
 
   run-collection:
     name: Run collection against mock/local env

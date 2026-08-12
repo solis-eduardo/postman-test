@@ -206,20 +206,53 @@ npx postman-cli collection lint "postman/collections/PetVerse API"
   lista `pet_name`/`pet_species`/`pet_breed`/`owner_id` porque são as que
   aparecem no `body`).
 
-  **O que é verificado vs. extrapolado:** o nó de trigger, o nó de `Login` e a
-  conexão entre os dois (`sourcePort: "data"` → `targetPort: "AI"`) vieram do
-  arquivo que o próprio Postman Desktop gerou — isso é fato. Os 3 nós
-  seguintes (`Create Owner`, `Create Pet`, `Create Appointment`) e as conexões
-  entre eles foram **extrapolados** copiando exatamente essa mesma estrutura
-  de node/conexão verificada, só trocando `element.name`/`method`/`path`/
-  `requestVariables`. Não temos confirmação de que `targetPort: "AI"` é o
-  nome certo da porta de entrada quando a origem é outro `task/http-request@2`
-  (só vimos isso partindo de um trigger `ev/endpoint@3`) — o JSON é válido e
-  segue o mesmo padrão, mas **abra no Postman Desktop pra confirmar que a
-  sequência aparece conectada visualmente como esperado**. Se alguma conexão
-  não "pegar", o próximo passo é o de sempre neste repo: você reconecta os
-  nós manualmente na UI uma vez, eu leio o arquivo resultante e corrijo o
-  padrão aqui.
+  **Portas das conexões — confirmado no app, não chutado:** os 5 nós
+  (trigger + 4 requests) foram extrapolados por nós copiando a estrutura do
+  node de `Login` (esse sim gerado pelo Postman Desktop), mas as conexões
+  entre eles foram corrigidas usando o próprio app como fonte de verdade —
+  depois de abrir o flow no Postman, ele reescreveu o arquivo com as conexões
+  certas entre nós `task/http-request@2`:
+  - **Trigger → primeiro request**: `sourcePort: "data"` (confirmado desde o
+    início, é a porta de saída de um `ev/endpoint@3`).
+  - **Request → request seguinte**: `sourcePort: "success"`, não `"data"`
+    como tínhamos extrapolado — `"success"` é a porta de saída de um
+    `task/http-request@2` (faz sentido: ele tem pelo menos duas saídas
+    possíveis, sucesso/erro). Removemos as 3 conexões que tínhamos criado com
+    `"data"` entre requests (ficariam duplicadas/erradas) e mantivemos só as
+    que o app gerou.
+  - `targetPort: "AI"` se confirmou como o nome fixo da porta de entrada de
+    `task/http-request@2`, indiferente de quem é a origem.
+
+## O espelho v2.1 em dist/ (por que existe)
+
+Vários recursos de distribuição do Postman (Publish docs, o botão oficial
+"Run in Postman", às vezes até Mock Servers) ainda não suportam collections
+v3/git-native — o próprio Postman retorna
+`"Publish support for multi-protocol collections coming soon"` ao tentar.
+Como isso é uma limitação da plataforma (não algo que dá pra contornar
+editando arquivos locais), mantemos um espelho automático em formato v2.1
+clássico, que esses recursos entendem:
+
+- `scripts/export_v2_collection.py` — lê `postman/collections/PetVerse API/`
+  (a fonte de verdade, v3) e monta o JSON v2.1 equivalente: `variables` (dict
+  → array), `auth` (`credentials.token` → `bearer[0].value`), `scripts`
+  (`http:beforeRequest`/`http:afterResponse` → `event[].listen`
+  `prerequest`/`test`), pastas e requests na ordem dada pelo campo `order` de
+  cada `definition.yaml`/`request.yaml`, exemplos (`*.example.yaml` →
+  `response[]`).
+- `scripts/normalize_v2_collection.js` — segunda etapa, via o SDK oficial
+  (`postman-collection`, a lib que Postman/Newman usam por baixo dos panos).
+  Necessária porque um `url: {raw: "..."}` sozinho (sem `host`/`path`/`query`
+  estruturados) **não é reconstruído** pelo parser do SDK — testamos e
+  `new sdk.Url({raw: "..."}).toString()` retorna `""`. O normalizador expande
+  cada URL com `new sdk.Url(rawString).toJSON()` (dessa vez passando a string
+  pura, que o parser processa corretamente) antes de validar com
+  `new sdk.Collection(...)`.
+- Testado com **round-trip completo**: o JSON gerado foi migrado de volta pra
+  v3 com `postman collection migrate` e lintado — mesma contagem de requests
+  (16) e exemplos (8), lint sem erros.
+- `npm run export:v2` roda as duas etapas. O CI (`api-tests.yml`) falha se
+  `dist/` estiver desatualizado em relação à collection v3.
 
 ## Por que não usamos "Generate spec from collection" como fonte de verdade
 
