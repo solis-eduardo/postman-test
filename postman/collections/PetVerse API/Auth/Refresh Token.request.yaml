@@ -1,0 +1,23 @@
+$kind: http-request
+description: Renova o access_token a partir de um refresh_token válido.
+url: "{{base_url}}/{{api_version}}/auth/refresh"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "refresh_token": "{{refresh_token}}"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Refresh retorna 200', function () {
+          pm.response.to.have.status(200);
+      });
+      if (pm.response.code === 200) {
+          pm.environment.set('access_token', pm.response.json().access_token);
+      }
+    language: text/javascript
+order: 2000

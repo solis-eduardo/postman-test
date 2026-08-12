@@ -1,0 +1,17 @@
+$kind: http-request
+url: "{{base_url}}/{{api_version}}/owners?page=1&pageSize=20"
+method: GET
+queryParams:
+  page: "1"
+  pageSize: "20"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 200', () => pm.response.to.have.status(200));
+      pm.test('Body possui items paginados', () => {
+          const json = pm.response.json();
+          pm.expect(json).to.have.property('items');
+          pm.expect(json.items).to.be.an('array');
+      });
+    language: text/javascript
+order: 1000

@@ -1,0 +1,26 @@
+$kind: http-request
+url: "{{base_url}}/{{api_version}}/appointments"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "petId": "{{pet_id}}",
+      "vetId": "vet-010",
+      "scheduledAt": "2026-08-20T14:30:00Z",
+      "reason": "Consulta de rotina"
+    }
+scripts:
+  - type: afterResponse
+    code: >-
+      pm.test('Consulta agendada com 201', () =>
+      pm.response.to.have.status(201));
+
+      if (pm.response.code === 201) {
+          pm.collectionVariables.set('appointment_id', pm.response.json().id);
+      }
+    language: text/javascript
+examples: ./.resources/Create Appointment.resources/examples
+order: 2000

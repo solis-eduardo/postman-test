@@ -1,0 +1,21 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/v1/pets?species=dog&limit=10"
+  method: GET
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "items": [
+          { "id": "pet-001", "name": "Rex", "species": "dog", "breed": "Labrador", "ownerId": "6f1a2b3c-owner" }
+        ],
+        "page": 1,
+        "pageSize": 10,
+        "total": 1
+      }
+order: 1000

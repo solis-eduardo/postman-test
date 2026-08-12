@@ -1,0 +1,34 @@
+$kind: http-request
+description: Autentica um usuário e retorna access_token/refresh_token.
+url: "{{base_url}}/{{api_version}}/auth/login"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "email": "{{user_email}}",
+      "password": "{{user_password}}"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Login retorna 200', function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test('Resposta contém access_token e refresh_token', function () {
+          const json = pm.response.json();
+          pm.expect(json).to.have.property('access_token');
+          pm.expect(json).to.have.property('refresh_token');
+      });
+
+      if (pm.response.code === 200) {
+          const json = pm.response.json();
+          pm.environment.set('access_token', json.access_token);
+          pm.environment.set('refresh_token', json.refresh_token);
+      }
+    language: text/javascript
+examples: ./.resources/Login.resources/examples
+order: 1000

@@ -1,0 +1,3 @@
+$kind: collection
+description: Autenticação e ciclo de vida do token de acesso.
+order: 1000

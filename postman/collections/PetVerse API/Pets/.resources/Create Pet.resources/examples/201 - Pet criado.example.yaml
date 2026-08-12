@@ -1,0 +1,22 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/v1/pets"
+  method: POST
+response:
+  statusCode: 201
+  statusText: Created
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "id": "pet-001",
+        "name": "Rex",
+        "species": "dog",
+        "breed": "Labrador",
+        "birthDate": "2022-03-15",
+        "ownerId": "6f1a2b3c-owner",
+        "createdAt": "2026-08-11T12:05:00Z"
+      }
+order: 1000

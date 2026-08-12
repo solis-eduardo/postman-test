@@ -1,0 +1,20 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/v1/owners"
+  method: POST
+response:
+  statusCode: 201
+  statusText: Created
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "id": "6f1a2b3c-owner",
+        "name": "Maria Souza",
+        "email": "maria.souza@example.com",
+        "phone": "+55 11 99999-0000",
+        "createdAt": "2026-08-11T12:00:00Z"
+      }
+order: 1000

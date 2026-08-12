@@ -1,0 +1,18 @@
+$kind: http-request
+url: "{{base_url}}/{{api_version}}/pets?species=dog&limit=10"
+method: GET
+headers:
+  Accept: application/json
+queryParams:
+  species: dog
+  limit: "10"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 200', () => pm.response.to.have.status(200));
+      pm.test('Retorna lista de pets', () => {
+          pm.expect(pm.response.json().items).to.be.an('array');
+      });
+    language: text/javascript
+examples: ./.resources/List Pets.resources/examples
+order: 1000

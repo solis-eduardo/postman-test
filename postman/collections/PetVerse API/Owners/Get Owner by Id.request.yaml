@@ -1,0 +1,13 @@
+$kind: http-request
+url: "{{base_url}}/{{api_version}}/owners/:ownerId"
+method: GET
+pathVariables:
+  ownerId: "{{owner_id}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 200 ou 404', () => {
+          pm.expect([200, 404]).to.include(pm.response.code);
+      });
+    language: text/javascript
+order: 3000

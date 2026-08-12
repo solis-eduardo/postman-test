@@ -1,0 +1,20 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/v1/appointments"
+  method: POST
+response:
+  statusCode: 201
+  statusText: Created
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "id": "appt-500",
+        "petId": "pet-001",
+        "vetId": "vet-010",
+        "scheduledAt": "2026-08-20T14:30:00Z",
+        "status": "scheduled"
+      }
+order: 1000

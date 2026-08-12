@@ -1,0 +1,17 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/v1/pets/inexistente"
+  method: GET
+response:
+  statusCode: 404
+  statusText: Not Found
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "error": "not_found",
+        "message": "Pet não encontrado."
+      }
+order: 1000

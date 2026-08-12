@@ -1,0 +1,12 @@
+name: PetVerse API - Staging
+values:
+  - key: base_url
+    value: 'https://api.staging.petverse.example.com'
+  - key: user_email
+    value: tutor.staging@petverse.dev
+  - key: user_password
+    value: '{{STAGING_USER_PASSWORD}}'
+  - key: access_token
+    value: ''
+  - key: refresh_token
+    value: ''

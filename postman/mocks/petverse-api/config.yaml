@@ -1,0 +1,20 @@
+id: 019ff5be-f47c-71a9-a82c-33924003a926
+version: 1
+name: PetVerse API
+slug: new-mock-ecc80
+enableSession: true
+protocol: http
+port: 3001
+autoRestartOnChange: true
+logging:
+  level: verbose
+  showBody: true
+associations:
+  - entityType: collection
+    entityId: CD1A0d74caafe2Fe9cB4eA81
+    relation: source
+    syncEnabled: true
+scenarios:
+  - name: default
+    path: ./default.js
+    default: true

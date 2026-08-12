@@ -5,6 +5,7 @@
 .env.production
 .phpactor.json
 .phpunit.result.cache
+__pycache__/
 /.codex
 /.cursor/
 /.idea
@@ -13,7 +14,8 @@
 /.vscode
 /.zed
 /auth.json
-/node_modules
+node_modules/
+postman-cli-reports/
 /public/build
 /public/fonts-manifest.dev.json
 /public/hot

@@ -1,0 +1,31 @@
+$kind: http-request
+url: "{{base_url}}/{{api_version}}/pets"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "name": "{{pet_name}}",
+      "species": "{{pet_species}}",
+      "breed": "{{pet_breed}}",
+      "birthDate": "2022-03-15",
+      "ownerId": "{{owner_id}}"
+    }
+scripts:
+  - type: beforeRequest
+    code: >-
+      if (!pm.collectionVariables.get('owner_id')) {
+          console.warn('owner_id não definido. Execute "Create Owner" antes de criar um pet.');
+      }
+    language: text/javascript
+  - type: afterResponse
+    code: |-
+      pm.test('Pet criado com 201', () => pm.response.to.have.status(201));
+      if (pm.response.code === 201) {
+          pm.collectionVariables.set('pet_id', pm.response.json().id);
+      }
+    language: text/javascript
+examples: ./.resources/Create Pet.resources/examples
+order: 2000
