@@ -1,0 +1,3 @@
+$kind: collection
+description: Cadastro e consulta de pets vinculados a um tutor.
+order: 3000

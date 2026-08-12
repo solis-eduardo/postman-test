@@ -1,0 +1,16 @@
+$kind: http-request
+url: "{{base_url}}/{{api_version}}/pets/:petId"
+method: GET
+pathVariables:
+  petId: "{{pet_id}}"
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Status 200 quando encontrado', () => {
+          if (pm.response.code === 200) {
+              pm.expect(pm.response.json()).to.have.property('id');
+          }
+      });
+    language: text/javascript
+examples: ./.resources/Get Pet by Id.resources/examples
+order: 3000

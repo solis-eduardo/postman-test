@@ -1,0 +1,5 @@
+type: dataset
+name: "Pets de exemplo"
+id: f786be7f-958e-4e27-85dc-be5838446c41
+description: "Massa de dados para criação de pets em lote"
+data_dir: .resources

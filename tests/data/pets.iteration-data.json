@@ -1,0 +1,7 @@
+[
+  { "pet_name": "Rex", "pet_species": "dog", "pet_breed": "Labrador" },
+  { "pet_name": "Mimi", "pet_species": "cat", "pet_breed": "Siamese" },
+  { "pet_name": "Bolt", "pet_species": "dog", "pet_breed": "Border Collie" },
+  { "pet_name": "Piu", "pet_species": "bird", "pet_breed": "Calopsita" },
+  { "pet_name": "Thor", "pet_species": "dog", "pet_breed": "Rottweiler" }
+]

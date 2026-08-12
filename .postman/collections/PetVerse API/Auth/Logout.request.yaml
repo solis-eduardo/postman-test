@@ -1,0 +1,14 @@
+$kind: http-request
+description: Invalida o refresh_token atual.
+url: "{{base_url}}/{{api_version}}/auth/logout"
+method: POST
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Logout retorna 204', function () {
+          pm.response.to.have.status(204);
+      });
+      pm.environment.unset('access_token');
+      pm.environment.unset('refresh_token');
+    language: text/javascript
+order: 3000

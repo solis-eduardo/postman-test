@@ -1,0 +1,5 @@
+node_modules/
+postman-cli-reports/
+*.log
+.env
+.DS_Store

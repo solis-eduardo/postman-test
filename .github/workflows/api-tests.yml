@@ -1,0 +1,34 @@
+name: API tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    name: Lint collection & OpenAPI spec
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Lint da collection (v3 / git-native) e da spec OpenAPI
+        run: bash scripts/lint.sh
+
+  run-collection:
+    name: Run collection against mock/local env
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Rodar a collection PetVerse API
+        run: bash scripts/run-collection.sh Local cli
+        # Em um repositório real, aponte o ambiente "Local" para um servidor
+        # mock/stub subido neste mesmo job (ex.: Prism a partir de specs/openapi.yaml)
+        # antes de rodar este passo.

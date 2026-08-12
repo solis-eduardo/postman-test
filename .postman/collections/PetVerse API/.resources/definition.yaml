@@ -1,0 +1,46 @@
+$kind: collection
+name: PetVerse API
+description: API fictícia de uma clínica veterinária / petshop. Gerencia tutores (owners), pets, consultas (appointments) e autenticação. Usada como coleção de exemplo para demonstrar o padrão Git Native do Postman (schema de collection v3, YAML por request).
+variables:
+  api_version: v1
+  owner_id: ""
+  pet_id: ""
+  appointment_id: ""
+  pet_name: Rex
+  pet_species: dog
+  pet_breed: Labrador
+scripts:
+  - type: http:beforeRequest
+    code: |-
+      // Script global de pré-requisição da collection.
+      // Garante que exista um access_token antes de qualquer chamada autenticada,
+      // exceto para as próprias rotas de autenticação.
+      const isAuthRequest = pm.request.url.toString().includes('/auth/');
+      const token = pm.environment.get('access_token');
+
+      if (!isAuthRequest && !token) {
+          console.warn('[PetVerse API] Nenhum access_token encontrado. Execute a requisição "Login" da pasta Auth antes de chamar endpoints protegidos.');
+      }
+
+      pm.request.headers.add({ key: 'X-Request-Id', value: pm.variables.replaceIn('{{$guid}}') });
+    language: text/javascript
+  - type: http:afterResponse
+    code: |-
+      // Testes globais aplicados a toda requisição da collection.
+      pm.test('Tempo de resposta abaixo de 1000ms', function () {
+          pm.expect(pm.response.responseTime).to.be.below(1000);
+      });
+
+      pm.test('Content-Type é application/json quando há corpo', function () {
+          if (pm.response.text() && pm.response.text().length > 0) {
+              pm.response.to.have.header('Content-Type');
+              pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');
+          }
+      });
+    language: text/javascript
+auth:
+  - id: 1c2a6197-9571-4b71-a072-3ca60fb92415
+    type: bearer
+    name: bearer auth
+    credentials:
+      token: "{{access_token}}"

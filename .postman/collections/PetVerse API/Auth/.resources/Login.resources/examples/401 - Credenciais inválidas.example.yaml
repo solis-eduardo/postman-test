@@ -1,0 +1,26 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/v1/auth/login"
+  method: POST
+  headers:
+    Content-Type: application/json
+  body:
+    type: text
+    content: |-
+      {
+        "email": "tutor@petverse.dev",
+        "password": "errada"
+      }
+response:
+  statusCode: 401
+  statusText: Unauthorized
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "error": "invalid_credentials",
+        "message": "E-mail ou senha inválidos."
+      }
+order: 2000

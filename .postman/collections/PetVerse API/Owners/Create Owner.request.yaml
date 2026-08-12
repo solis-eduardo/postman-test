@@ -1,0 +1,23 @@
+$kind: http-request
+url: "{{base_url}}/{{api_version}}/owners"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "name": "Maria Souza",
+      "email": "maria.souza@example.com",
+      "phone": "+55 11 99999-0000"
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Owner criado com 201', () => pm.response.to.have.status(201));
+      if (pm.response.code === 201) {
+          pm.collectionVariables.set('owner_id', pm.response.json().id);
+      }
+    language: text/javascript
+examples: ./.resources/Create Owner.resources/examples
+order: 2000

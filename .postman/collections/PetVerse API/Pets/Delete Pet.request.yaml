@@ -1,0 +1,10 @@
+$kind: http-request
+url: "{{base_url}}/{{api_version}}/pets/:petId"
+method: DELETE
+pathVariables:
+  petId: "{{pet_id}}"
+scripts:
+  - type: afterResponse
+    code: pm.test('Pet removido com 204', () => pm.response.to.have.status(204));
+    language: text/javascript
+order: 5000

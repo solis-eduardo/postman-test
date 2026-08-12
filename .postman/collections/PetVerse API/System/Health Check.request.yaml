@@ -1,0 +1,15 @@
+$kind: http-request
+url: "{{base_url}}/health"
+method: GET
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('API está saudável', () => {
+          pm.response.to.have.status(200);
+          pm.expect(pm.response.json().status).to.eql('ok');
+      });
+    language: text/javascript
+examples: ./.resources/Health Check.resources/examples
+order: 1000

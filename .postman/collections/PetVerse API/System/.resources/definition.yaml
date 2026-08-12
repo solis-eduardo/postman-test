@@ -1,0 +1,3 @@
+$kind: collection
+description: Endpoints de infraestrutura (health check).
+order: 5000

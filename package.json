@@ -1,0 +1,14 @@
+{
+  "name": "postman-test",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Collection fictícia da PetVerse API, versionada no padrão Git Native do Postman (collection schema v3), com spec OpenAPI, ambientes, testes e scripts de apoio.",
+  "scripts": {
+    "lint": "bash scripts/lint.sh",
+    "test": "bash scripts/run-collection.sh Local cli",
+    "test:staging": "bash scripts/run-collection.sh Staging cli"
+  },
+  "devDependencies": {
+    "postman-cli": "^1.45.0"
+  }
+}

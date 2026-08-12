@@ -1,0 +1,27 @@
+$kind: http-example
+request:
+  url: "{{base_url}}/v1/auth/login"
+  method: POST
+  headers:
+    Content-Type: application/json
+  body:
+    type: text
+    content: |-
+      {
+        "email": "tutor@petverse.dev",
+        "password": "s3nha-super-secreta"
+      }
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    Content-Type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "access_token": "eyJhbGciOiJIUzI1NiJ9.mock.token",
+        "refresh_token": "9f2c9a3e-6e2a-4e9b-9a3e-6e2a4e9b9a3e",
+        "expires_in": 3600
+      }
+order: 1000
