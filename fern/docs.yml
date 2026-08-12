@@ -6,6 +6,15 @@ logo:
   light: assets/logo-escura.png
   dark: assets/logo-branca.png
   height: 28
+navbar-links:
+  - type: minimal
+    text: OpenAPI (JSON)
+    href: /openapi.json
+    target: _blank
+  - type: minimal
+    text: OpenAPI (YAML)
+    href: /openapi.yaml
+    target: _blank
 navigation:
   - page: Guia da API
     path: pages/guia-da-api.mdx
@@ -21,3 +30,7 @@ colors:
   border:
     light: '#D9D2CA'
     dark: '#362F27'
+theme:
+  sidebar: minimal
+  page-actions: toolbar
+  footer-nav: minimal
