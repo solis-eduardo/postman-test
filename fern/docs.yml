@@ -1,9 +1,9 @@
 instances:
-  - url: https://solis.docs.buildwithfern.com
-title: PetVerse API | Documentation
+  - url: solis.docs.buildwithfern.com
+title: PetVerse API | Documentação (via fern/ no repo)
 navigation:
   - api: API Reference
     paginated: true
 colors:
-  accentPrimary: '#ffffff'
+  accentPrimary: '#22c55e'
   background: '#000000'
