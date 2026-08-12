@@ -31,7 +31,9 @@ flowchart LR
 publicadas independentes (collection, Fern Docs, portal Redoc). Nada além do
 `scripts/check_spec_alignment.py` garante que a collection não driftou da
 spec — os dois são artefatos editáveis separadamente (um pela UI do Postman,
-outro editando YAML), então essa checagem roda em todo `npm run lint` e no CI.
+outro editando YAML), então essa checagem roda em todo `npm run lint` e no CI,
+cobrindo endpoints, tags/agrupamento (usadas pela Fern pra montar a navegação)
+e schema de body/response (JSON Schema, via `jsonschema`).
 
 ## Mapa de pastas/arquivos → responsabilidade
 
@@ -47,7 +49,7 @@ outro editando YAML), então essa checagem roda em todo `npm run lint` e no CI.
 | `fern/fern.config.json` | Organização Fern + versão do CLI | Editado à mão (ou via commit direto no GitHub pelo Fern Editor) | Sim, pra qual organização Fern este repo publica |
 | `fern/generators.yml` | De onde a Fern lê a definição da API | Aponta pra `postman/specs/openapi.yaml` — editado à mão | Não é fonte, é **referência** à spec |
 | `fern/docs.yml` | Domínio, título, navegação, tema do site publicado | Editado à mão | Sim, pra aparência/URL do site |
-| `dist/*.postman_collection.json` | Espelho v2.1 da collection | **Gerado**, nunca editado à mão (`npm run export:v2`) | Não — é derivado; CI falha se ficar desatualizado |
+| `dist/*.postman_collection.json` | Espelho v2.1 da collection | **Gerado**, nunca editado à mão (`npm run export:v2`) | Não — é derivado; em push direto na `main` o CI regenera e **commita sozinho** se estiver desatualizado; em PR, só falha e pede pra alguém rodar local |
 | `scripts/check_spec_alignment.py` | Confere spec ↔ collection | — | N/A (é a checagem, não a fonte) |
 | `.github/workflows/*.yml` | Quando cada validação/publicação roda | — | N/A |
 
@@ -110,16 +112,20 @@ name in fern.config.json" que não vieram de nós).
 
 Exemplo: adicionar um campo novo num endpoint existente.
 
-1. Editar `postman/specs/openapi.yaml` (o contrato).
+1. Editar `postman/specs/openapi.yaml` (o contrato — schema do campo, tag,
+   `requestBody`/`responses`).
 2. Editar a requisição correspondente em
    `postman/collections/PetVerse API/**/*.request.yaml` (pela UI do Postman
    ou à mão) pra bater com o novo contrato — `scripts/check_spec_alignment.py`
-   não valida *schema* de body, só que o *endpoint* existe dos dois lados.
-3. `npm run lint` — confere collection, spec, alinhamento e config da Fern
-   de uma vez.
-4. `npm run export:v2` se for editar/publicar a collection fora do Postman
-   (import por link, mock duplicado etc. — ver "Compartilhando com clientes"
-   no `README.md`).
+   confere endpoint, tag/pasta **e** schema do body/response, então pega
+   divergência nos três.
+3. `npm run lint` — confere collection, spec, alinhamento (endpoints + tags +
+   schema) e config da Fern de uma vez.
+4. `npm run export:v2` só é necessário rodar manualmente se for
+   editar/publicar a collection **fora** do Postman antes de dar push (import
+   por link, mock duplicado etc. — ver "Compartilhando com clientes" no
+   `README.md`); em push direto na `main`, o CI regenera e commita `dist/`
+   sozinho se precisar.
 5. Commit + push. CI dispara automaticamente:
    - `api-tests.yml` — lint completo + roda a collection contra o mock local.
    - `docs-pages.yml` — republica o portal Redoc (se a spec mudou).

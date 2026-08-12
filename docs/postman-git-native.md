@@ -154,13 +154,13 @@ npx postman-cli collection lint "postman/collections/PetVerse API"
   arquivo existe em disco mas não aparece no menu "Items" do app.
 - **Alinhamento spec ↔ collection**: nada garante automaticamente que todo
   endpoint da spec tem uma requisição correspondente na collection (e
-  vice-versa) — são dois artefatos editados separadamente. `scripts/check_spec_alignment.py`
-  faz essa checagem localmente (parseia os `paths` do OpenAPI e os `method`/`url`
-  de cada `*.request.yaml`, normaliza `{{base_url}}`/`{{api_version}}`/`:param`
-  e compara os dois conjuntos) e roda como parte de `npm run lint` e do CI. No
-  app Postman, o equivalente nativo é linkar a spec à collection via API
-  Builder ("Define" → "Generate collection" / "Validate"), que sinaliza drift
-  direto na UI.
+  vice-versa), que a pasta bate com a tag, ou que o body/response bate com o
+  schema — são dois artefatos editados separadamente. `scripts/check_spec_alignment.py`
+  faz essa checagem localmente em três frentes (endpoints, tags/pasta, schema
+  de body/response via `jsonschema`) e roda como parte de `npm run lint` e do
+  CI. No app Postman, o equivalente nativo pra endpoints é linkar a spec à
+  collection via API Builder ("Define" → "Generate collection" / "Validate"),
+  que sinaliza drift direto na UI — mas isso não cobre tags nem schema.
 
 ## Documents, Flows e Mocks
 

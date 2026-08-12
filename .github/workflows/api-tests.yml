@@ -10,6 +10,8 @@ jobs:
   lint:
     name: Lint collection & OpenAPI spec
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # necessário só pro auto-commit do dist/ em push na main
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -18,13 +20,27 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.x"
-      - run: pip install pyyaml
+      - run: pip install pyyaml jsonschema
       - name: Lint da collection (v3 / git-native), da spec OpenAPI e alinhamento entre as duas
         run: bash scripts/lint.sh
       - run: npm install
-      - name: Regenerar o espelho v2.1 (dist/) e falhar se estiver desatualizado
+      - name: Regenerar o espelho v2.1 (dist/)
+        run: npm run export:v2
+      - name: Auto-commit o dist/ regenerado (só em push direto na main)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          npm run export:v2
+          if git diff --quiet -- dist/; then
+            echo "dist/ já estava atualizado, nada a commitar."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add dist/
+          git commit -m "chore: regenerar dist/ (espelho v2.1) [skip ci]"
+          git push
+      - name: Falhar se dist/ estiver desatualizado (PRs -- não commitamos em branch alheia)
+        if: github.event_name == 'pull_request'
+        run: |
           git diff --exit-code -- dist/ || {
             echo "::error::dist/ está desatualizado — rode 'npm run export:v2' e commite o resultado.";
             exit 1;

@@ -5,7 +5,7 @@
 # Requer:
 #   - Postman CLI: https://learning.postman.com/docs/postman-cli/postman-cli-installation/
 #     (ou `npm install postman-cli` e usar via npx, como abaixo)
-#   - Python 3 + PyYAML (`pip install pyyaml`)
+#   - Python 3 + PyYAML + jsonschema (`pip install pyyaml jsonschema`)
 #
 # Uso:
 #   ./scripts/lint.sh

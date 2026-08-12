@@ -151,6 +151,7 @@ php artisan test --compact
 ## Pré-requisitos (collection/spec)
 
 - [Node.js](https://nodejs.org/) 18+ (para rodar a Postman CLI via `npx`)
+- Python 3 + `pip install pyyaml jsonschema` (para `scripts/check_spec_alignment.py`)
 - Nenhuma conta/login é necessária para lint e execução local — apenas para
   recursos que envolvem a nuvem Postman (workspace, datasets remotos etc.)
 
@@ -201,13 +202,25 @@ Essa é a ordem que a coleção assume dentro de cada pasta (`order` nos arquivo
 
 Nada impede alguém de adicionar uma requisição só na collection (pela UI) ou só
 um path na spec (editando `postman/specs/openapi.yaml`) e esquecer do outro
-lado. `scripts/check_spec_alignment.py` compara os dois: lê todos os
-`METHOD /path` da spec e todos os `*.request.yaml` da collection, normaliza
-(`{{base_url}}`, `{{api_version}}`, `:param` → `{param}`) e aponta qualquer
-endpoint que exista só de um lado. Já roda como parte de `npm run lint` e do CI.
+lado — ou editar os dois, mas de um jeito que não bate mais. `scripts/check_spec_alignment.py`
+compara os dois em três frentes:
+
+1. **Endpoints** — todo `METHOD /path` da spec tem uma requisição
+   correspondente na collection (normaliza `{{base_url}}`, `{{api_version}}`,
+   `:param` → `{param}`), e vice-versa.
+2. **Tags/agrupamento** — a pasta que contém a requisição na collection bate
+   com a(s) tag(s) da operação na spec (é o que dá nome às seções no site da
+   Fern — ver `docs/fern-docs.md`).
+3. **Schema do body/response** — o corpo de requisição e cada resposta de
+   exemplo salva na collection validam contra o `requestBody`/`responses`
+   (JSON Schema) da spec. Variáveis de collection ainda não resolvidas
+   (`{{pet_species}}`) são tratadas como "presente, tipo desconhecido" em vez
+   de comparadas literalmente, pra não virar falso-positivo.
+
+Já roda como parte de `npm run lint` e do CI.
 
 ```bash
-python3 scripts/check_spec_alignment.py
+python3 scripts/check_spec_alignment.py    # requer PyYAML + jsonschema
 ```
 
 No app Postman, o caminho nativo pra isso é **linkar a spec à collection**
