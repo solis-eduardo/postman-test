@@ -31,7 +31,7 @@ jobs:
           }
 
   run-collection:
-    name: Run collection against mock/local env
+    name: Run collection against local mock
     runs-on: ubuntu-latest
     needs: lint
     steps:
@@ -39,8 +39,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Rodar a collection PetVerse API
+      - name: Subir o mock local (postman/mocks/petverse-api) na porta 3000
+        # 3000 é a base_url do ambiente "Local"
+        # (postman/environments/PetVerse API - Local.environment.yaml).
+        run: |
+          PORT=3000 node "postman/mocks/petverse-api/default.js" &
+          for i in $(seq 1 20); do
+            curl -sf http://localhost:3000/health > /dev/null && break
+            sleep 0.5
+          done
+          curl -sf http://localhost:3000/health || { echo "::error::mock não respondeu"; exit 1; }
+      - name: Rodar a collection PetVerse API contra o mock
         run: bash scripts/run-collection.sh Local cli
-        # Em um repositório real, aponte o ambiente "Local" para um servidor
-        # mock/stub subido neste mesmo job (ex.: Prism a partir de postman/specs/openapi.yaml)
-        # antes de rodar este passo.
